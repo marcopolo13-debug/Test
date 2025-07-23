@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Disney Adventure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Satisfy&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        .font-handwriting {
+            font-family: 'Satisfy', cursive;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-bg-image {
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            color: white;
+            background-color: #374151; /* Fallback color */
+        }
+        .card-bg-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.1));
+            border-radius: inherit;
+        }
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+        img {
+            background-color: #374151; /* gray-700 */
+        }
+        .birthday-banner {
+            position: absolute;
+            top: 1rem;
+            right: -2.5rem;
+            color: white;
+            padding: 0.5rem 2.5rem;
+            font-weight: bold;
+            transform: rotate(45deg);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            font-size: 0.9rem;
+            z-index: 2;
+        }
+        .maggie-birthday { background: linear-gradient(45deg, #fbbf24, #f97316); }
+        .marc-birthday { background: linear-gradient(45deg, #f59e0b, #84cc16); } /* Lion King Colors */
+        #animation-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        /* Checklist styles */
+        .checklist-item {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            background-color: #374151; /* gray-700 */
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+        .checklist-item.flex-col {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+        .checklist-item.checked {
+            background-color: #166534;
+        }
+        .checklist-item.checked .main-label {
+            text-decoration: line-through;
+            color: #a1a1aa; /* zinc-400 */
+        }
+        .checklist-item input[type="checkbox"] {
+            appearance: none;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid #6b7280; /* gray-500 */
+            border-radius: 0.375rem;
+            margin-right: 0.75rem;
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .checklist-item input[type="checkbox"]:checked {
+            background-color: #22c55e; /* green-500 */
+            border-color: #16a34a; /* green-600 */
+        }
+        .checklist-item input[type="checkbox"]:checked::after {
+            content: '✔';
+            position: absolute;
+            color: white;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1rem;
+        }
+        .counter-btn {
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 9999px;
+            background-color: #4b5563; /* gray-600 */
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+        }
+        .counter-btn:hover {
+            background-color: #6b7280; /* gray-500 */
+        }
+        .menu-dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .item-details {
+            font-size: 0.8rem;
+            color: #d1d5db; /* gray-300 */
+            margin-top: 0.25rem;
+        }
+        .checklist-item .item-details {
+             padding-left: 2.25rem;
+        }
+        .hidden-by-filter {
+            display: none !important;
+        }
+        /* Countdown Timer Styles */
+        .countdown-container {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            z-index: 10;
+            display: flex;
+            gap: 0.5rem;
+            background-color: rgba(0,0,0,0.5);
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            backdrop-filter: blur(5px);
+        }
+        .countdown-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 50px;
+        }
+        .countdown-digits {
+            background-color: #1f2937;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 2rem;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            line-height: 1;
+        }
+        .countdown-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.25rem;
+            color: #9ca3af;
+        }
+         .weather-widget {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 10;
+            background-color: rgba(0,0,0,0.5);
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .weather-icon {
+            font-size: 2.5rem;
+        }
+        .weather-temps {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .weather-temp {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .ride-counters {
+            width: 100%;
+            margin-top: 0.75rem;
+            padding-left: 0.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.75rem;
+        }
+        .counter-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+        .counter-label {
+            font-weight: 600;
+        }
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        .modal-content {
+            background: #1f2937;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            max-width: 90%;
+            width: 500px;
+        }
+        .gemini-facts {
+            background-color: #374151;
+            border-left: 4px solid #8b5cf6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+        .gemini-facts h4 {
+            color: #c4b5fd;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .gemini-facts ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            color: #d1d5db;
+        }
+        .magical-mission {
+            background: linear-gradient(45deg, #6d28d9, #4f46e5);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .magical-mission h3 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ddd6fe;
+            margin-bottom: 0.5rem;
+        }
+        .magical-mission p {
+            font-size: 1.125rem;
+            color: #e0e7ff;
+        }
+        .magical-memory-jar {
+            background-color: #1f2937;
+            border-top: 4px solid #fbbf24;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+
+    <canvas id="animation-canvas"></canvas>
+    <div id="app-container" class="min-h-screen">
+        <!-- Views will be rendered here by JavaScript -->
+    </div>
+    <div id="modal-container"></div>
+
+    <script>
+        // --- ICONS ---
+        const rideIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-cyan-400"><path d="M12 3c.3 0 .6.1.8.4l4.9 7.8c.2.3.2.7 0 1-.2.3-.5.4-.8.4H4c-.3 0-.6-.1-.8-.4-.2-.3-.2-.7 0-1L8.1 3.4c.3-.3.6-.4.9-.4Z"/><path d="M12 3h.01"/><path d="M4 16c-2 3-2 5 2 5s4-2 4-5"/><path d="M20 16c2 3 2 5-2 5s-4-2-4-5"/></svg>`;
+        const showIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-amber-400"><path d="M12.3 2.1a1 1 0 0 0-1.05-.22L3.36 5.89a1 1 0 0 0-.36.78v8.66a1 1 0 0 0 .36.78l7.89 3.99a1 1 0 0 0 1.05 0l7.89-3.99a1 1 0 0 0 .36-.78V5.89a1 1 0 0 0-.36-.78l-7.89-3.99a1 1 0 0 0-.7-.01Z"/><path d="m9.09 9 5.82 5.82M14.91 9l-5.82 5.82"/></svg>`;
+        const characterIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-pink-400"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><path d="M12 18a8.1 8.1 0 1 0 0-16.2 7.1 7.1 0 0 1 0 14.2Z"/></svg>`;
+        const paradeIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-lime-400"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>`;
+        const foodIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-orange-400"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M21 14v-2a4 4 0 0 0-4-4H9.5a2.5 2.5 0 0 1 0-5H17"/><path d="M21 14a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-2h5z"/></svg>`;
+        const snackIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-fuchsia-400"><path d="M19.1 14.8C20.5 13.5 21.3 12 21 10c-.5-3.5-3.5-6-7-6.5a14.3 14.3 0 0 0-4.5 0c-3.5.5-6.5 3-7 6.5-.3 2 .5 3.5 1.9 4.8"/><path d="M12 17a5.3 5.3 0 0 0 4-2H8a5.3 5.3 0 0 0 4 2Z"/><path d="M12 22a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>`;
+
+        // --- ATTRACTION DATA (LANDS ADDED) ---
+        const parkAttractions = {
+            magicKingdom: {
+                name: "Magic Kingdom",
+                lands: ["Main Street, U.S.A.", "Adventureland", "Frontierland", "Liberty Square", "Fantasyland", "Tomorrowland"],
+                rides: [ { id: "mk-haunted-mansion", name: "The Haunted Mansion", land: "Liberty Square" }, { id: "mk-pirates", name: "Pirates of the Caribbean", land: "Adventureland" }, { id: "mk-big-thunder", name: "Big Thunder Mountain Railroad", land: "Frontierland" }, { id: "mk-space-mountain", name: "Space Mountain", land: "Tomorrowland" }, { id: "mk-dwarfs-mine-train", name: "Seven Dwarfs Mine Train", land: "Fantasyland" }, { id: "mk-peter-pan", name: "Peter Pans Flight", land: "Fantasyland" }, { id: "mk-small-world", name: "its a small world", land: "Fantasyland" }, { id: "mk-jungle-cruise", name: "Jungle Cruise", land: "Adventureland" }, { id: "mk-winnie-the-pooh", name: "The Many Adventures of Winnie the Pooh", land: "Fantasyland" }, { id: "mk-dumbo", name: "Dumbo the Flying Elephant", land: "Fantasyland" }, { id: "mk-tron", name: "TRON Lightcycle / Run", land: "Tomorrowland" }, { id: "mk-peoplemover", name: "Tomorrowland Transit Authority PeopleMover", land: "Tomorrowland" }, { id: "mk-carousel-progress", name: "Walt Disneys Carousel of Progress", land: "Tomorrowland"} ],
+                shows: [ { id: "mk-happily-ever-after", name: "Happily Ever After", land: "Main Street, U.S.A.", times: ["10:00 PM"] }, {id: "mk-country-bears", name: "Country Bear Jamboree", land: "Frontierland", times: ["Varies"]}, {id: "mk-tiki-room", name: "Walt Disneys Enchanted Tiki Room", land: "Adventureland", times: ["Varies"]}, {id: "mk-friendship-faire", name: "Mickeys Magical Friendship Faire", land: "Main Street, U.S.A.", times: ["10:00 AM", "11:05 AM", "12:40 PM", "1:55 PM", "4:00 PM"]}, {id: "mk-water-pageant", name: "Electrical Water Pageant", land: "Main Street, U.S.A.", times: ["10:20 PM"]} ],
+                parades: [ { id: "mk-festival-fantasy", name: "Festival of Fantasy Parade", land: "Main Street, U.S.A.", times: ["3:00 PM"] }, { id: "mk-starlight-parade", name: "Disney Starlight: Dream the Night Away", land: "Main Street, U.S.A.", times: ["9:00 PM", "11:00 PM"] }, { id: "mk-mnsshp", name: "Mickeys Boo-To-You Halloween Parade", land: "Main Street, U.S.A.", times: ["9:15 PM", "11:15 PM"] } ],
+                characters: [ { id: "mk-mickey-town-square", name: "Mickey at Town Square Theater", land: "Main Street, U.S.A." }, { id: "mk-cinderella-hall", name: "Cinderella at Princess Fairytale Hall", land: "Fantasyland" }, { id: "mk-elena-hall", name: "Elena at Princess Fairytale Hall", land: "Fantasyland"}, { id: "mk-rapunzel-hall", name: "Rapunzel at Princess Fairytale Hall", land: "Fantasyland"}, { id: "mk-tiana-hall", name: "Tiana at Princess Fairytale Hall", land: "Fantasyland" }, {id: "mk-aladdin", name: "Aladdin & Jasmine in Adventureland", land: "Adventureland"}, {id: "mk-jack-sparrow", name: "Captain Jack Sparrow", land: "Adventureland"}, {id: "mk-peter-pan", name: "Peter Pan in Fantasyland", land: "Fantasyland"}, {id: "mk-winnie-pooh-tigger", name: "Winnie the Pooh & Tigger", land: "Fantasyland"}, {id: "mk-gaston", name: "Gaston in Fantasyland", land: "Fantasyland"}, {id: "mk-merida", name: "Merida at Fairytale Garden", land: "Fantasyland"} ],
+                quickService: [ {id:"qs-mk-caseys", name:"Caseys Corner", land:"Main Street, U.S.A.", food:"Hot dogs, corn dog nuggets"}, {id:"qs-mk-pecos", name:"Pecos Bill Tall Tale Inn", land:"Frontierland", food:"Tex-Mex (fajitas, rice bowls)"}, {id:"qs-mk-columbia", name:"Columbia Harbour House", land:"Liberty Square", food:"Seafood (lobster rolls, shrimp)"}, {id:"qs-mk-sleepy", name:"Sleepy Hollow", land:"Liberty Square", food:"Waffle sandwiches, funnel cakes"}, {id: "qs-mk-gaston", name: "Gastons Tavern", land: "Fantasyland", food: "Cinnamon rolls, LeFous Brew"} ],
+                snacks: [ {id:"snack-mk-waffle", name:"Waffles", land:"Liberty Square", location:"Sleepy Hollow", favourite: true}, {id:"snack-mk-corn-dog-nuggets", name:"Corn Dog Nuggets", land:"Main Street, U.S.A.", location:"Caseys Corner", favourite: true}, {id:"snack-mk-mac-cheese-pie", name:"Mac & Cheese Hand Pie", land:"Fantasyland", location:"The Friars Nook", favourite: true}, {id:"snack-mk-pepperoni-rolls", name:"Pepperoni Spring Rolls", land:"Adventureland", location:"Adventureland Spring Roll Cart", favourite: true}, {id:"snack-mk-cinnamon-roll", name:"Warm Cinnamon Roll", land:"Fantasyland", location:"Gastons Tavern", favourite: true}, {id:"snack-mk-dole", name:"Dole Whip", land:"Adventureland", location:"Aloha Isle"}, {id:"snack-mk-mickey-pretzel", name:"Mickey Pretzel", land: "Various", location:"Carts throughout park", favourite: true}, {id:"snack-mk-churro", name:"Churro", land: "Frontierland", location:"Various Carts", favourite: true}, {id:"snack-mk-pb-pie", name:"Peanut Butter Cookie Pie", land:"Main Street, U.S.A.", location:"Main Street Confectionery", favourite: true}, {id:"snack-mk-apple-cider-doughnut", name:"Apple Cider Doughnut", land:"Fantasyland", location:"The Friars Nook", favourite: true}]
+            },
+            epcot: {
+                name: "Epcot",
+                lands: ["World Celebration", "World Discovery", "World Nature", "World Showcase"],
+                rides: [ { id: "epcot-cosmic-rewind", name: "Guardians of the Galaxy: Cosmic Rewind", land: "World Discovery" }, { id: "epcot-test-track", name: "Test Track", land: "World Discovery" }, { id: "epcot-remy", name: "Remys Ratatouille Adventure", land: "World Showcase" }, { id: "epcot-frozen", name: "Frozen Ever After", land: "World Showcase" }, { id: "epcot-soarin", name: "Soarin Around the World", land: "World Nature" }, { id: "epcot-spaceship-earth", name: "Spaceship Earth", land: "World Celebration" }, { id: "epcot-figment", name: "Journey Into Imagination With Figment", land: "World Celebration"} ],
+                shows: [ { id: "epcot-luminous", name: "Luminous The Symphony of Us", land: "World Showcase", times: ["9:00 PM"] }, { id: "epcot-american-adventure", name: "The American Adventure", land: "World Showcase", times: ["Varies"]}, {id: "epcot-encanto", name: "¡Celebración Encanto!", land: "World Celebration", times: ["Varies"]}, {id: "epcot-beauty-beast", name: "Beauty and the Beast Sing-Along", land: "World Showcase", times: ["Varies"]} ],
+                characters: [ { id: "epcot-anna-elsa", name: "Anna and Elsa at Royal Sommerhus", land: "World Showcase" }, { id: "epcot-joy", name: "Joy at ImageWorks", land: "World Celebration" }, { id: "epcot-mickey-friends", name: "Mickey & Friends near Spaceship Earth", land: "World Celebration" }, {id: "epcot-mulan", name: "Mulan in the China Pavilion", land: "World Showcase"}, {id: "epcot-snow-white", name: "Snow White in the Germany Pavilion", land: "World Showcase"}, {id: "epcot-belle", name: "Belle in the France Pavilion", land: "World Showcase"}, {id: "epcot-donald", name: "Donald Duck in the Mexico Pavilion", land: "World Showcase"}, {id: "epcot-alice", name: "Alice in the UK Pavilion", land: "World Showcase"}, {id: "epcot-daisy", name: "Daisy Duck at International Gateway", land: "World Showcase"}, {id: "epcot-pluto", name: "Pluto at main entrance", land: "World Celebration"} ],
+                quickService: [ {id:"qs-epcot-les-halles", name:"Les Halles Boulangerie-Patisserie", land:"World Showcase", food:"Sandwiches, pastries, soups"}, {id:"qs-epcot-katsura", name:"Katsura Grill", land:"World Showcase", food:"Teriyaki, sushi, udon"}, {id:"qs-epcot-regal", name:"Regal Eagle Smokehouse", land:"World Showcase", food:"BBQ, burgers, salads"}, {id: "qs-epcot-connections", name: "Connections Eatery", land: "World Celebration", food: "Burgers, pizza, salads"}, {id:"qs-epcot-sunshine", name:"Sunshine Seasons", land:"World Nature", food:"Diverse options, fresh ingredients"} ],
+                snacks: [ {id:"snack-epcot-choc-strawberry", name:"Chocolate Covered Strawberry", land:"World Showcase", location:"Karamell-Küche, Germany", favourite: true}, {id:"snack-epcot-cronut", name:"Croissant Doughnut (Cronut)", land:"World Celebration", location:"Connections Eatery", favourite: true}, {id:"snack-epcot-school-bread", name:"School Bread", land:"World Showcase", location:"Kringla Bakeri Og Kafe, Norway"}, {id:"snack-epcot-caramel-popcorn", name:"Caramel Popcorn", land:"World Showcase", location:"Karamell-Küche, Germany"}, {id:"snack-epcot-croque-glace", name:"Croque Glacé", land:"World Showcase", location:"LArtisan des Glaces, France"}]
+            },
+            hollywoodStudios: {
+                name: "Hollywood Studios",
+                lands: ["Hollywood Boulevard", "Echo Lake", "Toy Story Land", "Star Wars: Galaxy's Edge", "Sunset Boulevard", "Animation Courtyard"],
+                rides: [ { id: "hs-rise-resistance", name: "Star Wars: Rise of the Resistance", land: "Star Wars: Galaxy's Edge" }, { id: "hs-slinky-dog", name: "Slinky Dog Dash", land: "Toy Story Land" }, { id: "hs-tower-terror", name: "The Twilight Zone Tower of Terror", land: "Sunset Boulevard" }, { id: "hs-rock-roller-coaster", name: "Rock n Roller Coaster", land: "Sunset Boulevard" }, { id: "hs-runaway-railway", name: "Mickey & Minnies Runaway Railway", land: "Hollywood Boulevard" }, { id: "hs-smugglers-run", name: "Millennium Falcon: Smugglers Run", land: "Star Wars: Galaxy's Edge" }, { id: "hs-toy-story-mania", name: "Toy Story Mania!", land: "Toy Story Land"} ],
+                shows: [ { id: "hs-fantasmic", name: "Fantasmic!", land: "Sunset Boulevard", times: ["9:00 PM", "10:30 PM"] }, { id: "hs-indiana-jones", name: "Indiana Jones Epic Stunt Spectacular", land: "Echo Lake", times: ["10:45 AM", "12:00 PM", "1:15 PM", "3:15 PM", "4:30 PM"]}, {id: "hs-frozen-singalong", name: "For the First Time in Forever: A Frozen Sing-Along", land: "Echo Lake", times: ["Varies"]}, {id: "hs-beauty-beast-live", name: "Beauty and the Beast - Live on Stage", land: "Sunset Boulevard", times: ["Varies"]}, {id: "hs-villains-show", name: "Disney Villains: Unfairly Ever After", land: "Sunset Boulevard", times: ["Varies"]}, { id: "hs-little-mermaid", name: "The Little Mermaid – A Musical Adventure", land: "Animation Courtyard", times: ["Varies"] }, { id: "hs-disney-jr", name: "Disney Jr. Play and Dance!", land: "Animation Courtyard", times: ["Varies"] } ],
+                characters: [ { id: "hs-chewbacca", name: "Chewbacca in Star Wars: Galaxys Edge", land: "Star Wars: Galaxy's Edge" }, { id: "hs-darth-vader", name: "Darth Vader at Star Wars Launch Bay", land: "Animation Courtyard"}, { id: "hs-kylo-ren", name: "Kylo Ren & Stormtroopers", land: "Star Wars: Galaxy's Edge"}, { id: "hs-mickey-minnie-dreams", name: "Mickey & Minnie at Red Carpet Dreams", land: "Commissary Lane"}, { id: "hs-olaf", name: "Olaf at Celebrity Spotlight", land: "Echo Lake" }, { id: "hs-sully", name: "Sully at Pixar Plaza", land: "Animation Courtyard" }, { id: "hs-buzz-lightyear", name: "Buzz Lightyear in Toy Story Land", land: "Toy Story Land"}, { id: "hs-woody-jessie", name: "Woody & Jessie in Toy Story Land", land: "Toy Story Land" }, { id: "hs-ariel", name: "Ariel at Walt Disney Presents", land: "Animation Courtyard" }, {id: "hs-disney-junior", name: "Disney Junior Characters", land: "Animation Courtyard"}],
+                quickService: [ {id:"qs-hs-woodys", name:"Woodys Lunch Box", land:"Toy Story Land", food:"Grilled cheese, tater tots"}, {id:"qs-hs-docking-bay", name:"Docking Bay 7 Food and Cargo", land:"Star Wars: Galaxys Edge", food:"Unique galactic-themed dishes"}, {id:"qs-hs-abc", name:"ABC Commissary", land:"Commissary Lane", food:"American/international fare"}, {id:"qs-hs-backlot", name:"Backlot Express", land:"Echo Lake", food:"Burgers, salads"}, { id: "qs-hs-ronto", name: "Ronto Roasters", land: "Star Wars: Galaxys Edge", food: "Ronto Wraps"} ],
+                snacks: [ {id:"snack-hs-wookie-cookie", name:"Wookiee Cookie", land:"Hollywood Boulevard", location:"Backlot Express", favourite: true}, {id:"snack-hs-num-num", name:"Jack-Jack Cookie Num Num", land:"Echo Lake", location:"The Market", favourite: true}, {id:"snack-hs-ronto-wrap", name:"Ronto Roasters", land:"Star Wars: Galaxys Edge", location:"Ronto Roasters"}, {id:"snack-hs-lunch-box-tarts", name:"Lunch Box Tarts", land:"Toy Story Land", location:"Woodys Lunch Box"}, {id:"snack-hs-carrot-cake-cookie", name:"Carrot Cake Cookie", land:"Hollywood Boulevard", location:"The Trolley Car Café"}]
+            },
+            animalKingdom: {
+                name: "Animal Kingdom",
+                lands: ["Discovery Island", "Pandora", "Africa", "Asia", "DinoLand U.S.A."],
+                rides: [ { id: "ak-flight-passage", name: "Avatar Flight of Passage", land: "Pandora" }, { id: "ak-kilimanjaro", name: "Kilimanjaro Safaris", land: "Africa" }, { id: "ak-expedition-everest", name: "Expedition Everest", land: "Asia" }, { id: "ak-dinosaur", name: "DINOSAUR", land: "DinoLand U.S.A." }, { id: "ak-navi-river", name: "Navi River Journey", land: "Pandora" }, { id: "ak-kali-river", name: "Kali River Rapids", land: "Asia" } ],
+                shows: [ { id: "ak-lion-king", name: "Festival of the Lion King", land: "Africa", times: ["Varies"] }, { id: "ak-finding-nemo", name: "Finding Nemo: The Big Blue... and Beyond!", land: "DinoLand U.S.A.", times: ["Varies"] }, { id: "ak-feathered-friends", name: "Feathered Friends in Flight!", land: "Asia", times: ["Varies"]} ],
+                characters: [ { id: "ak-mickey-minnie-adventurers", name: "Mickey & Minnie at Adventurers Outpost", land: "Discovery Island" }, { id: "ak-kevin", name: "Kevin from Up", land: "Discovery Island" }, {id: "ak-pocahontas", name: "Pocahontas on Discovery Island Trails", land: "Discovery Island"}, {id: "ak-moana", name: "Moana on Discovery Island", land: "Discovery Island"}, {id: "ak-donald-dino", name: "Donalds Dino-Bash!", land: "DinoLand U.S.A."}],
+                quickService: [ {id:"qs-ak-satuli", name:"Satuli Canteen", land:"Pandora", food:"Customizable bowls, bao buns"}, {id:"qs-ak-flame-tree", name:"Flame Tree Barbecue", land:"Discovery Island", food:"Ribs, chicken, pulled pork"}, {id:"qs-ak-yak-yeti-qs", name:"Yak & Yeti Local Food Cafes", land:"Asia", food:"American-Asian fusion"}, {id:"qs-ak-pizzafari", name:"Pizzafari", land:"Discovery Island", food:"Pizza, salads"}, { id: "qs-ak-eight-spoon", name: "Eight Spoon Cafe", land: "Discovery Island", food: "Mac & Cheese"} ],
+                snacks: [ {id:"snack-ak-choc-banana", name:"Chocolate Chip Banana Bread", land:"Africa", location:"Kusafiri Coffee Shop", favourite: true}, {id:"snack-ak-turkey-leg", name:"Turkey Leg", land: "Various", location:"Carts throughout park", favourite: true}, {id:"snack-ak-pongu", name:"Pongu Lumpia", land:"Pandora", location:"Pongu Pongu"}, {id: "snack-ak-cheeseburger-pods", name: "Cheeseburger Steamed Pods", land: "Pandora", location: "Satuli Canteen"}, {id:"snack-ak-dole-whip-rum", name:"Dole Whip with Rum", land:"Africa", location:"Tamu Tamu Refreshments"}]
+            }
+        };
+
+        // --- TRIP DATA ---
+        const tripData = [
+            { date: "05/08/2025", day: "Tuesday", description: "Arrival Day", imageUrl: "https://visitorlando.widen.net/content/lavi33q3em/jpeg/1299-overview.jpg?position=c&crop=true&color=ffffff&quality=8&w=640&h=640&q=65", experiences: [
+                { name: "Flight: BA 1339", time: "7:05 AM", details: "Jersey (JER) to London Gatwick (LGW)", imageUrl: "https://e2k9ube.cloudimg.io/v7/https://edienetlive.s3.eu-west-2.amazonaws.com/wp-content/uploads/sites/2/British-ai9rways.jpg?width=856&height=482&func=crop" },
+                { name: "Car Transfer", time: "Mid-morning", details: "London Gatwick to London Heathrow", imageUrl: "https://www.ichauffeur.co.uk/wp-content/uploads/2024/08/mercedes-8-seater-minibus-exterior-508x340.jpg" },
+                { name: "Flight: BA 2039", time: "2:30 PM", details: "London Heathrow (LHR) to Orlando (MCO)", imageUrl: "https://e2k9ube.cloudimg.io/v7/https://edienetlive.s3.eu-west-2.amazonaws.com/wp-content/uploads/sites/2/British-ai9rways.jpg?width=856&height=482&func=crop" },
+                { name: "Check into Caribe Royale Orlando", details: "Evening", imageUrl: "https://visitorlando.widen.net/content/lavi33q3em/jpeg/1299-overview.jpg?position=c&crop=true&color=ffffff&quality=8&w=640&h=640&q=65" }
+            ]},
+            { 
+                date: "06/08/2025", 
+                day: "Wednesday", 
+                description: "Vineland Premium Outlets", 
+                imageUrl: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0a/a1/da/05/orlando-premium-outlets.jpg?w=1200&h=700&s=1", 
+                restaurants: [], 
+                details: "Nike, Adidas, Coach, Kate Spade...", 
+                theme: "shopping",
+                shops: ["Adidas", "American Eagle", "Armani Exchange", "Banana Republic", "Burberry", "Calvin Klein", "Coach", "Crocs", "Disneys Character Warehouse", "Forever 21", "Gap", "Gucci", "J.Crew", "Kate Spade", "Levi's", "Lululemon", "Nike", "Polo Ralph Lauren", "Prada", "Puma", "Tommy Hilfiger", "Tory Burch", "Under Armour"],
+                outletRestaurants: ["Auntie Annes", "Charleys Philly Steaks", "Fords Garage", "Shake Shack", "Starbucks", "Subway", "Vila Brazilian Steakhouse"]
+            },
+            { date: "07/08/2025", day: "Thursday", description: "Discovery Cove", imageUrl: "https://discoverycove.com/orlando/-/media/commercial/discovery-cove-orlando/images/homepage-redesign/750x422/750x422-dco-2024-hp-media-2.jpg?h=422&w=750&la=en&hash=427166818FCAF8DA23AA87351C391C23", restaurants: [], experiences: [
+                { name: "VIP Cabana", imageUrl: "https://discoverycove.com/orlando/-/media/commercial/discovery-cove-orlando/images/upgraded-experiences/newcabana.jpg?h=270&w=384&la=en&hash=8813D661D8505CD23AF786C304737E4B" },
+                { name: "Dolphin Swim", imageUrl: "https://discoverycove.com/orlando/-/media/commercial/discovery-cove-orlando/images/dolphin-lagoon/2024/750x422-dco-2024-dolphin-swim-media-3.jpg?h=422&w=750&la=en&hash=0EE5E4043BDC6714BE8DDBD578960803" },
+                { name: "SeaVenture", imageUrl: "https://cdn.attractionworld.com/ftix/photos/tix/products/ftixrebrand2017/135124_seaventure-discovery-cove/hero_seaventure.jpg" }
+            ], specialTheme: "water"},
+            { date: "08/08/2025", day: "Friday", parkId: "magicKingdom", description: "Magic Kingdom", parkHours: "9:00 AM - 10:00 PM", imageUrl: "https://dvcshop.com/wp-content/uploads/2023/02/Grand-Floridian-Resort-Spa-4-3-768x576.jpg", restaurants: [
+                 { name: "Be Our Guest", time: "16:00", type: "Dinner", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/630/354/75/dam/wdpro-assets/gallery/dining/magic-kingdom/be-our-guest-restaurant/be-our-guest-restaurant-gallery04.jpg?1662578420346", signatureDishes: ["The Grey Stuff", "French Onion Soup", "Filet Mignon"] }
+            ]},
+            { date: "09/08/2025", day: "Saturday", parkId: "magicKingdom", description: "Magic Kingdom", parkHours: "9:00 AM - 10:00 PM", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1600/900/75/vision-dam/digital/parks-platform/parks-global-assets/disney-world/attractions/cinderella-castle/MK17-HappilyEverAfter0507-263_1-16x9.jpg?2022-03-10T19:31:46+00:00", restaurants: [
+                { name: "Cinderellas Royal Table", time: "16:20", type: "Dinner", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1600/900/75/dam/wdpro-assets/things-to-do/dining/magic-kingdom/cinderellas-royal-table/cinderella-royal-table-08.jpg?1741713311201", signatureDishes: ["The Clock Strikes Twelve", "Pan-Seared Scallops", "Spice-rubbed Pork Tenderloin"] }
+            ], birthday: { name: "Maggie", age: 12, theme: "classic" }},
+            { date: "10/08/2025", day: "Sunday", parkId: "hollywoodStudios", description: "Hollywood Studios", parkHours: "9:00 AM - 9:00 PM", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/434/244/75/vision-dam/digital/parks-platform/parks-global-assets/disney-world/attractions/hollywood-tower-of-terror/0817ZT_0025KP-16x9.jpg?2023-03-21T22:53:20+00:00", restaurants: [
+                { name: "Ohana", time: "19:50", type: "Dinner", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/630/354/75/dam/wdpro-assets/gallery/dining/resort-dining/polynesian-resort/ohana/ohana-gallery16.jpg?1738786574944", signatureDishes: ["Ohana Bread Pudding", "Honey-Coriander Chicken Wings", "Pork Dumplings"] }
+            ]},
+            { date: "11/08/2025", day: "Monday", parkId: "epcot", description: "Epcot", parkHours: "9:00 AM - 9:00 PM", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/630/354/75/dam/wdpro-assets/gallery/attractions/epcot/spaceship-earth/spaceship-earth-gallery00.jpg?1661272216380", restaurants: [
+                { name: "Via Napoli Ristorante e Pizzeria", time: "12:10", type: "Lunch", imageUrl: "https://www.disneyfoodblog.com/wp-content/uploads/2021/01/2021-WDW-EPCOT-Italy-Pavilion-Via-Napoli-restaurant-general-700x538.jpg", signatureDishes: ["Prosciutto e Melone Pizza", "Polenta", "Tiramisù"] }
+            ]},
+             { date: "12/08/2025", day: "Tuesday", description: "Typhoon Lagoon", parkHours: "10:00 AM - 5:00 PM", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/468/468/75/vision-dam/digital/parks-platform/parks-global-assets/disney-world/water-parks/typhoon-lagoon/0917ZM_5180AFN_R2_xak-16x9.jpg?2025-04-22T17:36:02+00:00", restaurants: [
+                { name: "Narcoossees", time: "20:40", type: "Dinner / Fireworks", imageUrl: "https://eatsleepdisney.com/wp-content/uploads/Narcoossees-Fireworks-View-960x540.jpg", signatureDishes: ["Lobster Bisque", "Surf & Turf", "Almond-crusted Cheesecake"] }
+             ], specialTheme: 'fireworks' },
+             { date: "13/08/2025", day: "Wednesday", parkId: "animalKingdom", description: "Animal Kingdom", parkHours: "9:00 AM - 7:00 PM", imageUrl: "https://allears.net/wp-content/uploads/2024/10/Hurricane-Millton-WDW-Reopening-2024-02.jpg-AK-tree-of-life--700x525.jpg", restaurants: [
+                { name: "Yak & Yeti", time: "12:45", type: "Lunch", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1600/900/75/dam/wdpro-assets/things-to-do/dining/animal-kingdom/yak-and-yeti-restaurant/yak-and-yeti-restaurant-00.jpg?1704795251721", signatureDishes: ["Ahi Tuna Nachos", "Korean Fried Chicken", "Mango Pie"] }
+             ], birthday: { name: "Marc", theme: "lion-king" }, specialNote: "Extended hours at Magic Kingdom 11pm to 1am" },
+             { date: "14/08/2025", day: "Thursday", parkId: "epcot", description: "Epcot", parkHours: "9:00 AM - 9:00 PM", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/630/354/75/dam/wdpro-assets/gallery/attractions/epcot/spaceship-earth/spaceship-earth-gallery00.jpg?1661272216380", restaurants: [
+                  { name: "Space 220", time: "13:00", type: "Lunch", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/630/354/75/vision-dam/digital/parks-platform/parks-global-assets/disney-world/dining/space-220/0324ZO_0259KP_xak-16x9.jpg?2022-06-23T22:02:59+00:00", signatureDishes: ["Blue Moon Cauliflower", "Centauri Burger", "Galactic Salmon"] }
+             ]},
+             { date: "15/08/2025", day: "Friday", parkId: "hollywoodStudios", description: "Hollywood Studios", parkHours: "9:00 AM - 9:00 PM", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/434/244/75/vision-dam/digital/parks-platform/parks-global-assets/disney-world/attractions/hollywood-tower-of-terror/0817ZT_0025KP-16x9.jpg?2023-03-21T22:53:20+00:00", restaurants: [
+                { name: "Roundup Rodeo BBQ", time: "16:45", type: "Dinner", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/630/354/75/vision-dam/digital/parks-platform/parks-global-assets/disney-world/dining/roundup-rodeo-bbq/Recco_1-16x9.jpg?2023-03-09T22:45:50+00:00", signatureDishes: ["Prospectors Platter", "Cheddar Biscuits", "Cupcake à la Forky"] }
+             ]},
+            { date: "16/08/2025", day: "Saturday", description: "Resort / Disney Springs", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1600/900/75/dam/wdpro-assets/places-to-stay/grand-floridian/recreation/pools-grand-floridian-resort-and-spa-00.jpg?1746183135125", restaurants: [
+                { name: "1900 Park Fare", time: "08:30", type: "Breakfast", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1600/900/75/vision-dam/digital/parks-platform/parks-global-assets/disney-world/dining/character-dining/0323ZM_0649SD_R2_xak-16x9.jpg?2024-05-22T14:56:00+00:00", signatureDishes: ["Strawberry Soup", "Grand Floridian Strawberry Rose Spritzer", "Carved Meats"] }
+            ], experiences: [
+                { name: "AM at the Pool", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1600/900/75/dam/wdpro-assets/places-to-stay/grand-floridian/recreation/pools-grand-floridian-resort-and-spa-00.jpg?1746183135125" },
+                { name: "PM at Disney Springs", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/532/299/75/dam/disney-springs/visit/disney-springs-map-16x9.jpg?1592281081027", shops: ["World of Disney", "The LEGO Store", "Zara", "Ron Jon Surf Shop", "Coca-Cola Store", "Uniqlo", "Sephora", "Lululemon"]},
+                { name: "Cirque du Soleil: Drawn to Life", time: "17:00", imageUrl: "https://www.cirquedusoleil.com/-/media/cds/images/shows/drawn-to-life/revamp_2024/sp/story_thumbnails/dtl-split-01-740x925.jpg?db=web&h=925&vs=1&w=740&hash=0C34BE1C957179513ABBDCDA7F2CC70B" }
+            ]},
+            { date: "17/08/2025", day: "Sunday", parkId: "magicKingdom", description: "Magic Kingdom", parkHours: "9:00 AM - 12:00 AM (MNSSHP)", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1600/900/75/vision-dam/digital/parks-platform/parks-global-assets/disney-world/attractions/cinderella-castle/MK17-HappilyEverAfter0507-263_1-16x9.jpg?2022-03-10T19:31:46+00:00", restaurants: [
+                { name: "Ohana", time: "08:30", type: "Breakfast", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/630/354/75/dam/wdpro-assets/gallery/dining/resort-dining/polynesian-resort/ohana/ohana-gallery16.jpg?1738786574944", signatureDishes: ["Pineapple-Coconut Bread", "Stitch and Mickey Waffles", "POG Juice"] }
+            ], experiences: [
+                { name: "Mickeys Not-So-Scary Halloween Party", time: "7:00 PM - 12:00 AM", emoji: "🎃", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/434/244/75/vision-dam/digital/parks-platform/parks-global-assets/disney-world/events/mickeys-not-so-scary/attraction-entertainment/0919ZN_6088AFN_xak_1-16x9.jpg?2024-04-15T17:51:39+00:00"}
+            ]},
+            { date: "18/08/2025", day: "Monday", parkId: "epcot", description: "Epcot", parkHours: "9:00 AM - 11:00 PM", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/630/354/75/dam/wdpro-assets/gallery/attractions/epcot/spaceship-earth/spaceship-earth-gallery00.jpg?1661272216380", restaurants: [
+                { name: "Story Book Dining at Artist Point", time: "17:30", type: "Dinner", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/630/354/75/vision-dam/digital/parks-platform/parks-global-assets/disney-world/resorts/disneys-wilderness-lodge/1215ZS_0055KP_jrod-16x9.jpg?2022-03-10T19:21:45+00:00", signatureDishes: ["Mushroom Bisque", "Royal Prime Rib Roast", "Poison Apple Mousse"] }
+            ], specialNote: "Extra Evening Hours at Epcot: 9pm - 11pm"},
+            { date: "19/08/2025", day: "Tuesday", description: "Blizzard Beach", parkHours: "10:00 AM - 5:00 PM", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1600/900/75/dam/wdpro-assets/gallery/attractions/blizzard-beach/summit-plummet/summit-plummet-gallery00.jpg?1659552008373", restaurants: [
+                { name: "Grand Floridian Cafe", time: "17:45", type: "Dinner", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/630/354/75/dam/wdpro-assets/gallery/dining/resort-dining/grand-floridian-resort-and-spa/grand-floridian-cafe/grand-floridian-cafe-gallery09.jpg?1725212478305", signatureDishes: ["Lobster Thermidor Burger", "Miso-glazed Salmon", "Buttermilk-fried Chicken"] }
+            ], specialTheme: "water" },
+            { date: "20/08/2025", day: "Wednesday", parkId: "animalKingdom", description: "Animal Kingdom", parkHours: "8:00 AM - 8:00 PM", imageUrl: "https://allears.net/wp-content/uploads/2024/10/Hurricane-Millton-WDW-Reopening-2024-02.jpg-AK-tree-of-life--700x525.jpg", restaurants: [] },
+            { date: "21/08/2025", day: "Thursday", parkId: "hollywoodStudios", description: "Hollywood Studios", parkHours: "9:00 AM - 9:00 PM", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/434/244/75/vision-dam/digital/parks-platform/parks-global-assets/disney-world/attractions/hollywood-tower-of-terror/0817ZT_0025KP-16x9.jpg?2023-03-21T22:53:20+00:00", restaurants: [
+                { name: "Chef Mickeys", time: "5:05 PM", type: "Dinner", imageUrl: "https://insidethemagic.net/wp-content/uploads/2020/05/8f54fabaa0f11da6d8a065b46929918d-800x400.jpg", signatureDishes: ["Mickey Waffles", "Carved Meats", "Minnies Sweets"] }
+            ]},
+            { date: "22/08/2025", day: "Friday", parkId: "magicKingdom", description: "Magic Kingdom", parkHours: "9:00 AM - 10:00 PM", imageUrl: "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1600/900/75/vision-dam/digital/parks-platform/parks-global-assets/disney-world/attractions/cinderella-castle/MK17-HappilyEverAfter0507-263_1-16x9.jpg?2022-03-10T19:31:46+00:00", restaurants: [], specialNote: "Checkout from Caribe Royale at 11am" },
+            { date: "23/08/2025", day: "Saturday", description: "Departure Day", imageUrl: "https://mallatmillenia.com/timeline-source/1663771022Millenia_August2021_B__0041-dc2-copy.jpg", experiences: [
+                { name: "Mall of Millenia", details: "Daytime Shopping & Lunch", imageUrl: "https://mallatmillenia.com/timeline-source/1663771022Millenia_August2021_B__0041-dc2-copy.jpg" },
+                { name: "Flight: BA 2038", time: "9:00 PM", details: "Orlando (MCO) to London Gatwick (LGW)", imageUrl: "https://e2k9ube.cloudimg.io/v7/https://edienetlive.s3.eu-west-2.amazonaws.com/wp-content/uploads/sites/2/British-ai9rways.jpg?width=856&height=482&func=crop" }
+            ] }
+        ];
+
+        const landingPageImageUrl = "https://www.nossasferias.com/images/galeria/WALT.png";
+        const appContainer = document.getElementById('app-container');
+        const familyMembers = ["Maretha", "Marc", "Stella", "Maggie", "Hattie"];
+        
+        // --- CHECKLIST STATE MANAGEMENT ---
+        let parkChecklistState = JSON.parse(localStorage.getItem('parkChecklistState')) || {};
+        let memoryJarState = JSON.parse(localStorage.getItem('memoryJarState')) || {};
+
+        function saveChecklistState() {
+            localStorage.setItem('parkChecklistState', JSON.stringify(parkChecklistState));
+        }
+
+        function saveMemoryJarState() {
+            localStorage.setItem('memoryJarState', JSON.stringify(memoryJarState));
+        }
+
+        function handleCounterChange(e, parkId, rideId, person, change) {
+            // Ensure the park exists in the state
+            if (!parkChecklistState[parkId]) {
+                parkChecklistState[parkId] = { rides: {}, shows: [], characters: [], parades: [], quickService: [], snacks: [] };
+            }
+            if (!parkChecklistState[parkId].rides) {
+                parkChecklistState[parkId].rides = {};
+            }
+
+            // Ensure the ride object exists and has all member counters
+            if (!parkChecklistState[parkId].rides[rideId]) {
+                parkChecklistState[parkId].rides[rideId] = { Family: 0 };
+                familyMembers.forEach(name => {
+                    parkChecklistState[parkId].rides[rideId][name] = 0;
+                });
+            }
+
+            // Update the specific counter
+            let currentCount = parkChecklistState[parkId].rides[rideId][person] || 0;
+            let newCount = currentCount + change;
+            if (newCount < 0) newCount = 0;
+
+            parkChecklistState[parkId].rides[rideId][person] = newCount;
+            
+            // If the Family counter is increased, increment all individual counters
+            if (person === 'Family' && change > 0) {
+                familyMembers.forEach(name => {
+                    parkChecklistState[parkId].rides[rideId][name] = (parkChecklistState[parkId].rides[rideId][name] || 0) + 1;
+                    const individualCounterSpan = document.getElementById(`counter-${rideId}-${name}`);
+                    if (individualCounterSpan) {
+                        individualCounterSpan.textContent = parkChecklistState[parkId].rides[rideId][name];
+                    }
+                });
+            }
+
+            saveChecklistState();
+
+            // Update the DOM for the counter that was clicked
+            const counterSpan = document.getElementById(`counter-${rideId}-${person}`);
+            if (counterSpan) {
+                counterSpan.textContent = newCount;
+            }
+
+            // Update the 'checked' state of the main item based on the Family counter
+            const itemDiv = document.getElementById(`ride-item-${rideId}`);
+            if (itemDiv) {
+                const familyCount = parkChecklistState[parkId].rides[rideId]['Family'] || 0;
+                if (familyCount > 0) {
+                    itemDiv.classList.add('checked');
+                } else {
+                    itemDiv.classList.remove('checked');
+                }
+            }
+        }
+
+        function handleToggleChange(e, parkId, itemId, category) {
+            if (!parkChecklistState[parkId]) parkChecklistState[parkId] = { rides: {}, shows: [], characters: [], parades: [], quickService: [], snacks: [] };
+            if (!parkChecklistState[parkId][category]) parkChecklistState[parkId][category] = [];
+
+            const isChecked = e.target.checked;
+            if (isChecked) {
+                if (!parkChecklistState[parkId][category].includes(itemId)) {
+                    parkChecklistState[parkId][category].push(itemId);
+                }
+            } else {
+                parkChecklistState[parkId][category] = parkChecklistState[parkId][category].filter(id => id !== itemId);
+            }
+            
+            saveChecklistState();
+            
+            const itemDiv = e.target.closest('.checklist-item');
+            if(isChecked) itemDiv.classList.add('checked');
+            else itemDiv.classList.remove('checked');
+        }
+        
+        function toggleMenu(button) {
+            const parentCard = button.closest('.bg-gray-800');
+            if (!parentCard) return;
+            const menu = parentCard.querySelector('.menu-dropdown');
+            if (!menu) return;
+
+            if (menu.style.maxHeight) {
+                menu.style.maxHeight = null;
+                button.innerHTML = 'Show Signature Dishes';
+            } else {
+                menu.style.maxHeight = menu.scrollHeight + "px";
+                button.innerHTML = 'Hide Signature Dishes';
+            } 
+        }
+        
+        // --- RENDER FUNCTIONS ---
+        // Simplified router logic
+        function router() {
+            window.scrollTo(0, 0);
+            const hash = window.location.hash.substring(1);
+            if (!hash) {
+                renderHomePage();
+                return;
+            }
+            if (hash.startsWith('park-')) {
+                const parkId = hash.replace('park-', '');
+                renderParkChecklistPage(parkId);
+                return;
+            }
+            const dayData = tripData.find(d => d.date === hash);
+            if (dayData) {
+                renderDetailsPage(dayData);
+            } else {
+                renderHomePage(); // Fallback if hash is invalid
+            }
+        }
+        
+        function renderLeaderboard() {
+            const leaderboardContainer = document.getElementById('leaderboard-container');
+            if (!leaderboardContainer) return;
+
+            const scores = { Family: 0 };
+            familyMembers.forEach(name => scores[name] = 0);
+
+            // Calculate scores from the state
+            const state = JSON.parse(localStorage.getItem('parkChecklistState')) || {};
+            for (const parkId in state) {
+                if (state[parkId].rides) {
+                    for (const rideId in state[parkId].rides) {
+                        const rideCounters = state[parkId].rides[rideId];
+                        for (const person in rideCounters) {
+                            if (scores.hasOwnProperty(person)) {
+                                scores[person] += rideCounters[person];
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Sort the scores, excluding 'Family' from the main leaderboard display if desired
+            const sortedScores = Object.entries(scores)
+                .filter(([name]) => name !== 'Family')
+                .sort(([,a],[,b]) => b-a);
+
+            // Generate HTML
+            const leaderboardHTML = sortedScores.map(([name, score], index) => {
+                let emoji = '';
+                if (index === 0 && score > 0) emoji = '👑';
+                if (index === 1 && score > 0) emoji = '🥈';
+                if (index === 2 && score > 0) emoji = '🥉';
+                return `
+                    <li class="flex justify-between items-center p-3 bg-gray-700 rounded-lg">
+                        <span class="font-bold text-lg">${index + 1}. ${name} ${emoji}</span>
+                        <span class="text-xl font-bold text-cyan-400">${score} Rides</span>
+                    </li>
+                `;
+            }).join('');
+
+            leaderboardContainer.innerHTML = `
+                <div class="max-w-4xl mx-auto mt-12 p-4 md:p-0">
+                    <h2 class="text-4xl font-bold text-center mb-6">Ride Leaderboard</h2>
+                    <ol class="space-y-3">
+                        ${leaderboardHTML}
+                    </ol>
+                </div>
+            `;
+        }
+
+
+        function renderHomePage() {
+            stopAnimations(); 
+            let dayTilesHTML = '';
+            tripData.forEach(day => {
+                let birthdayBanner = '';
+                if(day.birthday) {
+                    const themeClass = day.birthday.theme === 'lion-king' ? 'marc-birthday' : 'maggie-birthday';
+                    birthdayBanner = `<div class="birthday-banner ${themeClass}">🎉 Birthday!</div>`;
+                }
+                const detailsHTML = day.details ? `<p class="text-sm font-semibold text-cyan-300 mt-2">${day.details}</p>` : '';
+                
+                dayTilesHTML += `
+                    <div class="card-bg-image flex flex-col justify-end h-80 md:h-96 bg-gray-700 rounded-xl shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300 cursor-pointer" 
+                         onclick="navigateToDay('${day.date}')">
+                        <div style="background-image: url('${day.imageUrl}')" class="absolute inset-0 bg-cover bg-center"></div>
+                        ${birthdayBanner}
+                        <div class="card-content p-6">
+                            <p class="text-lg font-semibold">${day.date} - ${day.day}</p>
+                            <h3 class="text-2xl md:text-3xl font-bold mt-1">${day.description}</h3>
+                            ${detailsHTML}
+                        </div>
+                    </div>
+                `;
+            });
+
+            appContainer.innerHTML = `
+                <div class="fade-in">
+                    <header class="h-[40vh] md:h-[50vh] flex items-center justify-center text-center bg-cover" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${landingPageImageUrl}'); background-position: center 25%;">
+                        <div class="countdown-container" id="countdown"></div>
+                        <div>
+                            <h1 class="font-handwriting text-5xl md:text-7xl text-white drop-shadow-lg">Our Disney Adventure</h1>
+                            <p class="text-xl md:text-2xl text-white mt-4 drop-shadow-md">August 2025</p>
+                        </div>
+                    </header>
+                    <main class="p-4 md:p-8">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
+                            ${dayTilesHTML}
+                        </div>
+                        <div class="mt-12 text-center">
+                            <h2 class="text-3xl font-bold text-white mb-4">Park Checklists</h2>
+                            <div class="flex flex-wrap justify-center gap-4">
+                                <button onclick="navigateToPark('magicKingdom')" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">Magic Kingdom</button>
+                                <button onclick="navigateToPark('epcot')" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">Epcot</button>
+                                <button onclick="navigateToPark('hollywoodStudios')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">Hollywood Studios</button>
+                                <button onclick="navigateToPark('animalKingdom')" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">Animal Kingdom</button>
+                            </div>
+                        </div>
+                    </main>
+                    <div id="leaderboard-container"></div>
+                    <div id="memory-jar-container" class="pb-12"></div>
+                </div>
+            `;
+            startCountdown();
+            renderLeaderboard();
+            renderMemoryJar('home');
+        }
+        
+        function filterChecklist(landName) {
+            const allItems = document.querySelectorAll('#park-checklist-container [data-land]');
+            allItems.forEach(item => {
+                if (landName === null || item.dataset.land === landName) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+             const allHeaders = document.querySelectorAll('#park-checklist-container h4');
+             allHeaders.forEach(header => {
+                 const nextElement = header.nextElementSibling;
+                 if(nextElement && nextElement.children.length > 0) {
+                    const visibleItems = Array.from(nextElement.children).filter(child => child.style.display !== 'none');
+                    if(visibleItems.length > 0) {
+                        header.style.display = 'flex';
+                    } else {
+                        header.style.display = 'none';
+                    }
+                 }
+             });
+        }
+
+        function buildParkChecklistHTML(parkId) {
+            const parkData = parkAttractions[parkId];
+            if (!parkData) return '';
+
+            const landButtonsHTML = `<div class="mt-8 pt-6 border-t border-gray-700">
+                <h3 class="text-3xl font-bold text-white mb-4 text-center">Explore by Area</h3>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button onclick="filterChecklist(null)" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300">All</button>
+                    ${parkData.lands.map(land => `<button onclick="filterChecklist('${land}')" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300">${land}</button>`).join('')}
+                </div>
+                </div>`;
+
+            const createChecklistCategory = (title, items, categoryKey, icon) => {
+                if (!items || items.length === 0) return '';
+                let itemsHTML;
+                if (categoryKey === 'rides') {
+                    itemsHTML = items.map(item => {
+                        const rideCounters = parkChecklistState[parkId]?.rides?.[item.id] || { Family: 0 };
+                        const familyCount = rideCounters['Family'] || 0;
+                        const allPeople = ['Family', ...familyMembers];
+                        
+                        const countersHTML = allPeople.map(person => {
+                            const count = rideCounters[person] || 0;
+                            return `
+                                <div class="counter-group">
+                                    <span class="counter-label">${person}</span>
+                                    <div class="flex items-center space-x-2">
+                                        <button onclick="handleCounterChange(event, '${parkId}', '${item.id}', '${person}', -1)" class="counter-btn">-</button>
+                                        <span id="counter-${item.id}-${person}" class="font-bold text-lg w-8 text-center">${count}</span>
+                                        <button onclick="handleCounterChange(event, '${parkId}', '${item.id}', '${person}', 1)" class="counter-btn">+</button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+
+                        return `
+                            <div id="ride-item-${item.id}" class="checklist-item flex-col ${familyCount > 0 ? 'checked' : ''}" data-land="${item.land}">
+                                <label class="font-semibold text-lg mb-3">${item.name}</label>
+                                <div class="ride-counters">
+                                    ${countersHTML}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else if (categoryKey === 'characters') {
+                    const checkedItems = parkChecklistState[parkId] || {};
+                    itemsHTML = items.map(item => {
+                        const isChecked = (checkedItems[categoryKey] && checkedItems[categoryKey].includes(item.id));
+                        return `
+                            <div class="checklist-item ${isChecked ? 'checked' : ''}" data-land="${item.land}">
+                                <input type="checkbox" id="${item.id}" ${isChecked ? 'checked' : ''} onchange="handleToggleChange(event, '${parkId}', '${item.id}', '${categoryKey}')">
+                                <div class="flex-grow flex justify-between items-center">
+                                    <label for="${item.id}" class="cursor-pointer main-label">${item.name}</label>
+                                    <button onclick="getCharacterQuestion('${item.name.replace(/'/g, `\\'`)}')" class="ml-4 bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-3 rounded-lg text-sm">
+                                         ✨ Ask a Question
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                else if (categoryKey === 'quickService' || categoryKey === 'snacks') {
+                    const checkedItems = parkChecklistState[parkId] || {};
+                    const sortedItems = categoryKey === 'snacks' ? [...items].sort((a, b) => (b.favourite ? 1 : 0) - (a.favourite ? 1 : 0)) : items;
+                    itemsHTML = sortedItems.map(item => {
+                        const isChecked = (checkedItems[categoryKey] && checkedItems[categoryKey].includes(item.id));
+                        const details = item.location ? `<div class="item-details">${item.land} &bull; ${item.location}</div>` : `<div class="item-details">${item.land}</div>`;
+                        const favIcon = item.favourite ? '<span class="text-yellow-400 mr-2">⭐</span>' : '';
+                        return `
+                            <div class="checklist-item" data-land="${item.land}">
+                                <input type="checkbox" id="${item.id}" ${isChecked ? 'checked' : ''} onchange="handleToggleChange(event, '${parkId}', '${item.id}', '${categoryKey}')">
+                                <div class="flex-grow">
+                                    <label for="${item.id}" class="cursor-pointer flex items-center">${favIcon}${item.name}</label>
+                                    ${details}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    const checkedItems = parkChecklistState[parkId] || {};
+                    itemsHTML = items.map(item => {
+                        const isChecked = (checkedItems[categoryKey] && checkedItems[categoryKey].includes(item.id));
+                         const times = item.times ? `<div class="item-details font-semibold text-cyan-300">${item.times.join(' / ')}</div>` : '';
+                        return `
+                            <div class="checklist-item ${isChecked ? 'checked' : ''}" data-land="${item.land}">
+                                <input type="checkbox" id="${item.id}" ${isChecked ? 'checked' : ''} onchange="handleToggleChange(event, '${parkId}', '${item.id}', '${categoryKey}')">
+                                <div class="flex-grow">
+                                    <label for="${item.id}" class="cursor-pointer flex-grow main-label">${item.name}</label>
+                                    ${times}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                return `<h4 class="text-2xl font-semibold text-white mt-6 mb-3 flex items-center">${icon}${title}</h4><div class="space-y-3">${itemsHTML}</div>`;
+            };
+
+            return `
+                <div id="park-checklist-container">
+                     ${landButtonsHTML}
+                    <h3 class="text-3xl font-bold text-white mb-4 text-center mt-8">${parkData.name} Checklist</h3>
+                    ${createChecklistCategory('Rides', parkData.rides, 'rides', rideIcon)}
+                    ${createChecklistCategory('Top 5 Quick Service', parkData.quickService, 'quickService', foodIcon)}
+                    ${createChecklistCategory('Top Snacks', parkData.snacks, 'snacks', snackIcon)}
+                    ${createChecklistCategory('Shows', parkData.shows, 'shows', showIcon)}
+                    ${createChecklistCategory('Parades', parkData.parades, 'parades', paradeIcon)}
+                    ${createChecklistCategory('Characters', parkData.characters, 'characters', characterIcon)}
+                </div>
+            `;
+        }
+
+        function renderParkChecklistPage(parkId) {
+            stopAnimations();
+            const parkData = parkAttractions[parkId];
+            if (!parkData) {
+                navigateToHome();
+                return;
+            }
+
+            const parkChecklistHTML = buildParkChecklistHTML(parkId);
+
+            appContainer.innerHTML = `
+                <div class="fade-in p-4 md:p-8 max-w-4xl mx-auto">
+                    <button onclick="navigateToHome()" class="mb-6 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300">
+                        &larr; Back to Itinerary
+                    </button>
+                    <div class="text-center mb-8">
+                        <h2 class="text-4xl md:text-5xl font-bold text-white">${parkData.name}</h2>
+                    </div>
+                    <div>
+                        ${parkChecklistHTML}
+                    </div>
+                    <div id="memory-jar-container" class="mt-12"></div>
+                </div>
+            `;
+            renderMemoryJar(`park-${parkId}`);
+        }
+
+        function renderDetailsPage(dayData) {
+            let birthdayHeader = '';
+            let animationTheme = null;
+
+            if (dayData.birthday) {
+                 if (dayData.birthday.theme === 'lion-king') {
+                     birthdayHeader = `<h2 class="text-4xl md:text-5xl font-bold text-amber-500 drop-shadow-lg animate-pulse text-center mb-4">Happy Birthday, Marc! Hakuna Matata!</h2>`;
+                     animationTheme = 'lion-king';
+                 } else {
+                     birthdayHeader = `<h2 class="text-4xl md:text-5xl font-bold text-amber-400 drop-shadow-lg animate-pulse text-center mb-4">Happy 12th Birthday, ${dayData.birthday.name}!</h2>`;
+                     animationTheme = 'classic';
+                 }
+            } else if (dayData.theme === 'shopping') {
+                 animationTheme = 'shopping';
+            } else if (dayData.specialTheme === 'fireworks') {
+                animationTheme = 'fireworks';
+            } else if (dayData.specialTheme === 'water') {
+                animationTheme = 'water';
+            }
+
+            if(animationTheme) {
+                startAnimation(animationTheme);
+            } else {
+                stopAnimations();
+            }
+            
+            let specialNoteHTML = '';
+            if (dayData.specialNote) {
+                specialNoteHTML = `
+                    <div class="bg-indigo-800 border-l-4 border-indigo-400 text-white p-4 rounded-lg mb-6 shadow-lg">
+                        <div class="flex items-center">
+                            <div class="py-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-300 w-6 h-6 mr-4"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></div>
+                            <div>
+                                <p class="font-bold">Special Note</p>
+                                <p class="text-sm">${dayData.specialNote}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            let restaurantCardsHTML = '';
+            if (dayData.restaurants && dayData.restaurants.length > 0) {
+                 dayData.restaurants.forEach((resto, index) => {
+                     let signatureDishList = '';
+                     if (resto.signatureDishes && resto.signatureDishes.length > 0) {
+                         signatureDishList = `<ul class="list-disc list-inside text-gray-300 mt-2 space-y-1">${resto.signatureDishes.map(dish => `<li>${dish}</li>`).join('')}</ul>`;
+                     }
+                     
+                     restaurantCardsHTML += `
+                         <div id="restaurant-card-${index}" class="bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-2">
+                             <div class="flex flex-col md:flex-row">
+                                 <img src="${resto.imageUrl}" alt="${resto.name}" class="w-full md:w-1/3 h-48 md:h-auto object-cover" onerror="this.style.display='none'">
+                                 <div class="p-6 flex flex-col justify-center flex-1">
+                                     <h3 class="text-2xl font-bold text-white">${resto.name}</h3>
+                                     <p class="text-lg text-gray-300 mt-2">${resto.type || 'Reservation'}: <span class="font-semibold text-cyan-400">${resto.time}</span></p>
+                                     <div class="flex flex-wrap gap-2 mt-4">
+                                         <button onclick="toggleMenu(this)" class="inline-block bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300 text-center flex-grow sm:flex-grow-0">
+                                             Show Signature Dishes
+                                         </button>
+                                         <button onclick="getRestaurantFacts('${resto.name.replace(/'/g, `\\'`)}', 'restaurant-card-${index}')" class="inline-block bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300 text-center flex-grow sm:flex-grow-0">
+                                             ✨ Show Fun Facts
+                                         </button>
+                                     </div>
+                                 </div>
+                             </div>
+                             <div class="menu-dropdown px-6 pb-4">
+                                 ${signatureDishList}
+                             </div>
+                             <div class="px-6 pb-4" id="facts-container-restaurant-card-${index}"></div>
+                         </div>
+                     `;
+                 });
+            }
+            
+            let experienceHTML = '';
+            if (dayData.experiences && dayData.experiences.length > 0) {
+                 dayData.experiences.forEach(exp => {
+                      let nameHTML = exp.emoji ? `<span class="text-2xl">${exp.emoji}</span> ${exp.name}` : exp.name;
+                      let timeHTML = exp.time ? `<p class="text-center font-bold text-lg text-cyan-400">${exp.time}</p>` : '';
+                      let detailsHTML = exp.details ? `<p class="text-center text-gray-300">${exp.details}</p>`: '';
+                      let shopsHTML = '';
+                      if (exp.shops && exp.shops.length > 0) {
+                         const shopList = exp.shops.map(shop => `<li class="bg-gray-700 p-2 rounded">${shop}</li>`).join('');
+                         shopsHTML = `
+                             <div class="text-center mt-4">
+                                 <button onclick="toggleMenu(this)" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300 text-center w-full sm:w-auto">
+                                     Show Shops & Food
+                                 </button>
+                             </div>
+                             <div class="menu-dropdown px-6 pb-4">
+                                 <ul class="space-y-2 text-center mt-4">${shopList}</ul>
+                             </div>
+                         `;
+                      }
+                      experienceHTML += `
+                          <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-6">
+                              <img src="${exp.imageUrl}" alt="${exp.name}" class="w-full h-48 object-cover">
+                              <div class="p-4">
+                                 <h3 class="text-xl font-bold text-white text-center">${nameHTML}</h3>
+                                 ${timeHTML}
+                                 ${detailsHTML}
+                                 ${shopsHTML}
+                              </div>
+                          </div>
+                         `
+                 });
+                 experienceHTML = `<h3 class="text-3xl font-bold text-white mb-4 border-t border-gray-700 pt-6">Today's Plan</h3>${experienceHTML}`;
+            }
+
+            let shoppingHTML = '';
+            if (dayData.theme === 'shopping' && dayData.shops) {
+                const shopList = dayData.shops.map(shop => `<li class="bg-gray-700 p-2 rounded">${shop}</li>`).join('');
+                const foodList = dayData.outletRestaurants.map(food => `<li class="bg-gray-700 p-2 rounded">${food}</li>`).join('');
+
+                shoppingHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
+                        <div>
+                            <h3 class="text-2xl font-bold text-white mb-4 text-center">Shops</h3>
+                            <ul class="space-y-2 text-center">${shopList}</ul>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white mb-4 text-center">Food & Drink</h3>
+                            <ul class="space-y-2 text-center">${foodList}</ul>
+                        </div>
+                    </div>
+                `;
+            }
+
+            let parkChecklistHTML = '';
+            if (dayData.parkId && parkAttractions[dayData.parkId]) {
+                parkChecklistHTML = buildParkChecklistHTML(dayData.parkId);
+            }
+
+            if (!restaurantCardsHTML && !experienceHTML && !shoppingHTML && !parkChecklistHTML) {
+                restaurantCardsHTML = `<div class="bg-gray-800 rounded-xl shadow-lg p-8 text-center"><p class="text-gray-400">No special plans for this day.</p></div>`;
+            }
+
+            appContainer.innerHTML = `
+                <div class="fade-in p-4 md:p-8 max-w-4xl mx-auto">
+                    <div class="weather-widget" id="weather-widget"></div>
+                    <button onclick="navigateToHome()" class="mb-6 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300">
+                        &larr; Back to Itinerary
+                    </button>
+                    ${birthdayHeader}
+                    <div id="magical-mission-container" class="mb-8"></div>
+                    <div class="text-center mb-8">
+                        <p class="text-xl text-gray-400">${dayData.date} - ${dayData.day}</p>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white">${dayData.description}</h2>
+                    </div>
+                    ${specialNoteHTML}
+                    <div>
+                        ${restaurantCardsHTML}
+                        ${experienceHTML}
+                        ${shoppingHTML}
+                        ${parkChecklistHTML}
+                    </div>
+                    <div id="memory-jar-container" class="mt-12"></div>
+                </div>
+            `;
+             fetchWeather(dayData.date);
+             getMagicalMission(dayData);
+             renderMemoryJar(dayData.date);
+        }
+
+        function renderMemoryJar(key) {
+            const container = document.getElementById('memory-jar-container');
+            if (!container) return;
+            const memory = memoryJarState[key] || '';
+            container.innerHTML = `
+                <div class="magical-memory-jar">
+                    <h3 class="text-3xl font-bold text-center mb-4 text-amber-300">✨ Magical Memory Jar</h3>
+                    <p class="text-center text-gray-400 mb-4">What was your favorite moment of the day?</p>
+                    <textarea id="memory-jar-textarea" class="w-full bg-gray-800 text-white rounded-lg p-4 h-32 border border-gray-600 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="Write your memory here..."></textarea>
+                </div>
+            `;
+            const textarea = document.getElementById('memory-jar-textarea');
+            textarea.value = memory;
+            textarea.addEventListener('input', (e) => {
+                memoryJarState[key] = e.target.value;
+                saveMemoryJarState();
+            });
+        }
+
+        // --- ANIMATION LOGIC ---
+        const canvas = document.getElementById('animation-canvas');
+        const ctx = canvas.getContext('2d');
+        let animationPieces = [];
+        let animationFrameId;
+        let animationTimeoutId;
+        let allowRegeneration = true;
+
+        const classicColors = ['#f97316', '#fbbf24', '#38bdf8', '#8b5cf6', '#ec4899'];
+        const starWarsColors = ['#ef4444', '#3b82f6', '#e5e7eb', '#22c55e'];
+        const lionKingColors = ['#f59e0b', '#d97706', '#84cc16', '#16a34a', '#78350f'];
+        const shoppingColors = ['#22c55e', '#16a34a', '#84cc16', '#4ade80'];
+        const fireworkColors = ['#ffbe0b', '#fb5607', '#ff006e', '#8338ec', '#3a86ff'];
+        const waterColors = ['#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function createAnimation(theme) {
+            animationPieces = [];
+            const pieceCount = theme === 'fireworks' ? 50 : 200;
+            let colors;
+            switch(theme) {
+                case 'star-wars': colors = starWarsColors; break;
+                case 'lion-king': colors = lionKingColors; break;
+                case 'shopping': colors = shoppingColors; break;
+                case 'fireworks': colors = fireworkColors; break;
+                case 'water': colors = waterColors; break;
+                default: colors = classicColors;
+            }
+            
+            for (let i = 0; i < pieceCount; i++) {
+                let piece = {
+                    x: Math.random() * canvas.width,
+                    y: -Math.random() * 100, // Start from the top for all
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speed: Math.random() * 3 + 2,
+                    rotation: Math.random() * Math.PI * 2,
+                    rotationSpeed: (Math.random() - 0.5) * 0.1,
+                    theme: theme,
+                    alpha: 1
+                };
+
+                if (theme === 'star-wars' && Math.random() > 0.5) {
+                    piece.h = Math.random() * 40 + 20; piece.w = 4;
+                } else if (theme === 'shopping') {
+                    piece.text = '$'; piece.size = Math.random() * 20 + 15;
+                } else if (theme === 'fireworks') {
+                    piece.radius = Math.random() * 2 + 1;
+                    piece.speedX = Math.sin(piece.rotation) * piece.speed;
+                    piece.speedY = Math.cos(piece.rotation) * piece.speed;
+                    piece.friction = 0.98;
+                    piece.gravity = 0.05;
+                } else if (theme === 'water') {
+                    piece.radius = Math.random() * 10 + 5;
+                    piece.speedY = Math.random() * 2 + 1; // Positive speed to fall down
+                }
+                else {
+                    piece.w = Math.random() * 8 + 5; piece.h = piece.w;
+                }
+                animationPieces.push(piece);
+            }
+        }
+
+        function updateAnimation() {
+            animationPieces.forEach((p, i) => {
+                if (p.theme === 'fireworks') {
+                    p.x += p.speedX; p.y += p.speedY; p.speedX *= p.friction; p.speedY *= p.friction; p.speedY += p.gravity;
+                    p.alpha -= 0.01;
+                    if (p.alpha <= 0) animationPieces.splice(i, 1);
+                } else if (p.theme === 'water') {
+                    p.y += p.speedY;
+                    if (p.y > canvas.height + p.radius) {
+                        if (allowRegeneration) {
+                            p.y = -p.radius;
+                            p.x = Math.random() * canvas.width;
+                        } else {
+                            animationPieces.splice(i, 1);
+                        }
+                    }
+                }
+                else { // Confetti
+                    p.y += p.speed; p.rotation += p.rotationSpeed;
+                    if (p.y > canvas.height) {
+                        if(allowRegeneration) {
+                            p.y = -20; p.x = Math.random() * canvas.width;
+                        } else {
+                            animationPieces.splice(i, 1);
+                        }
+                    }
+                }
+            });
+        }
+
+        function drawAnimation() {
+            if(!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            animationPieces.forEach(p => {
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rotation);
+
+                if (p.theme === 'shopping') {
+                     ctx.font = `bold ${p.size}px Arial`; ctx.fillText(p.text, 0, 0);
+                } else if (p.theme === 'fireworks' || p.theme === 'water') {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                     ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                }
+                ctx.restore();
+            });
+        }
+
+        function mainAnimationLoop() {
+            updateAnimation();
+            drawAnimation();
+            animationFrameId = requestAnimationFrame(mainAnimationLoop);
+        }
+
+        function startAnimation(theme = 'classic') {
+            resizeCanvas();
+            createAnimation(theme);
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            mainAnimationLoop();
+
+            allowRegeneration = true;
+            if (animationTimeoutId) clearTimeout(animationTimeoutId);
+            animationTimeoutId = setTimeout(() => {
+                allowRegeneration = false;
+            }, 5000);
+        }
+
+        function stopAnimations() {
+             if (animationFrameId) cancelAnimationFrame(animationFrameId);
+             if (animationTimeoutId) clearTimeout(animationTimeoutId);
+             if (ctx) {
+                 ctx.clearRect(0, 0, canvas.width, canvas.height);
+             }
+             animationPieces = [];
+        }
+        
+        function startCountdown() {
+            const countdownEl = document.getElementById('countdown');
+            if(!countdownEl) return;
+
+            const targetDate = new Date("2025-08-05T07:05:00").getTime();
+            let countdownInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = targetDate - now;
+
+                if(distance < 0) {
+                    clearInterval(countdownInterval);
+                    countdownEl.innerHTML = "<div class='text-2xl font-bold text-white'>Have a Magical Trip!</div>";
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                const format = (num) => String(num).padStart(2, '0');
+
+                countdownEl.innerHTML = `
+                    <div class="countdown-item">
+                        <div class="countdown-digits">${format(days)}</div>
+                        <div class="countdown-label">Days</div>
+                    </div>
+                     <div class="countdown-item">
+                        <div class="countdown-digits">${format(hours)}</div>
+                        <div class="countdown-label">Hours</div>
+                    </div>
+                     <div class="countdown-item">
+                        <div class="countdown-digits">${format(minutes)}</div>
+                        <div class="countdown-label">Mins</div>
+                    </div>
+                     <div class="countdown-item">
+                        <div class="countdown-digits">${format(seconds)}</div>
+                        <div class="countdown-label">Secs</div>
+                    </div>
+                `;
+            }, 1000);
+        }
+
+        async function fetchWeather(dateStr) {
+            const widget = document.getElementById('weather-widget');
+            if (!widget) return;
+
+            const [day, month, year] = dateStr.split('/');
+            const date = new Date(`${year}-${month}-${day}`);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const diffDays = Math.ceil((date - today) / (1000 * 60 * 60 * 24));
+
+            if (diffDays < 0 || diffDays > 15) {
+                widget.innerHTML = `<span class="text-sm">Forecast not yet available</span>`;
+                return;
+            }
+
+            const lat = 28.37;
+            const lon = -81.51;
+            const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m&daily=weathercode&timezone=America/New_York&start_date=${year}-${month}-${day}&end_date=${year}-${month}-${day}`;
+            
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                if (data && data.hourly && data.daily) {
+                    const temps = data.hourly.temperature_2m;
+                    const am_temps = temps.slice(8, 13); // 8am to 12pm
+                    const pm_temps = temps.slice(13, 18); // 1pm to 5pm
+                    const am_avg = Math.round(am_temps.reduce((a, b) => a + b, 0) / am_temps.length);
+                    const pm_avg = Math.round(pm_temps.reduce((a, b) => a + b, 0) / pm_temps.length);
+
+                    const weatherCode = data.daily.weathercode[0];
+                    const icon = getWeatherIcon(weatherCode);
+                    widget.innerHTML = `
+                        <span class="weather-icon">${icon}</span>
+                        <div class="weather-temps">
+                            <div class="weather-temp">AM: ${am_avg}°C</div>
+                            <div class="weather-temp">PM: ${pm_avg}°C</div>
+                        </div>
+                    `;
+                } else {
+                     widget.innerHTML = `<span class="text-sm">N/A</span>`;
+                }
+            } catch (error) {
+                console.error("Failed to fetch weather:", error);
+                widget.innerHTML = `<span class="text-sm">Weather unavailable</span>`;
+            }
+        }
+
+        function getWeatherIcon(code) {
+            if (code === 0) return '☀️'; // Clear sky
+            if (code <= 3) return '☁️'; // Mainly clear, partly cloudy, and overcast
+            if (code <= 48) return '🌫️'; // Fog
+            if (code <= 57) return '💧'; // Drizzle
+            if (code <= 67) return '🌧️'; // Rain
+            if (code <= 77) return '❄️'; // Snow
+            if (code <= 82) return '🌦️'; // Rain showers
+            if (code <= 86) return '🌨️'; // Snow showers
+            if (code <= 99) return '⛈️'; // Thunderstorm
+            return '❓';
+        }
+        
+        // --- ROUTING/HISTORY LOGIC ---
+        function navigateToDay(date) {
+            window.location.hash = date;
+        }
+
+        function navigateToPark(parkId) {
+            window.location.hash = `park-${parkId}`;
+        }
+
+        function navigateToHome() {
+            window.location.hash = '';
+        }
+        
+        // --- HARDCODED DATA FUNCTIONS ---
+        const restaurantFunFacts = {
+            "Be Our Guest": ["The grand ballroom ceiling is painted with a beautiful mural of clouds and cherubs, inspired by the Sistine Chapel.", "The chandeliers are over 20 feet tall and are modeled after those given to Ludwig II of Bavaria.", "The 'snow' falling outside the ballroom windows is a digital effect created by the animators of the original film."],
+            "Cinderellas Royal Table": ["You are dining inside the iconic Cinderella Castle, the centerpiece of Magic Kingdom.", "The beautiful stained-glass windows overlooking the park tell the story of Cinderella.", "Every guest is greeted as 'my lord' or 'my lady' to make you feel like royalty."],
+            "Ohana": ["The name 'Ohana' means 'family' in Hawaiian, and the meal is served family-style.", "The restaurant features an 18-foot-long open fire pit where the meats are cooked.", "From some tables, you can get a great view of the Magic Kingdom fireworks."],
+            "Via Napoli Ristorante e Pizzeria": ["The three massive pizza ovens are named after the three active volcanoes in Italy: Etna, Vesuvius, and Stromboli.", "The water used for the pizza dough is sourced to be identical in composition to the water in Naples, Italy.", "The restaurant's design is inspired by the architecture of Florence, Italy."],
+            "Narcoossees": ["The restaurant is located on the shores of the Seven Seas Lagoon, offering stunning views of the Magic Kingdom fireworks.", "It's a signature dining location known for its incredible seafood and coastal cuisine.", "The name 'Narcoossee' is a Native American word meaning 'little bear'."],
+            "Yak & Yeti": ["The restaurant is designed to resemble a Nepalese village home, filled with artifacts collected by a fictional explorer.", "It's one of the few places in Animal Kingdom where you can get a full-service, sit-down meal.", "The menu features a delicious fusion of Pan-Asian flavors."],
+            "Space 220": ["The experience begins in a 'Stellarvator' that simulates a 220-mile journey up to the Centauri Space Station.", "The panoramic windows show a real-time view of Earth from space, with day and night cycles.", "You might spot some astronauts floating by your window during your meal!"],
+            "Roundup Rodeo BBQ": ["The entire restaurant is themed as if Andy from Toy Story built it in his backyard using his toys and playsets.", "Listen for announcements that 'Andy's coming!' – everyone in the restaurant, including the Cast Members, has to freeze in place.", "The ceiling is decorated with giant drawings of characters like Woody and Jessie."],
+            "1900 Park Fare": ["Look for 'Big Bertha,' a massive, antique organ from a French carousel that plays music for the guests.", "This restaurant is famous for its Strawberry Soup, a unique and beloved Disney treat.", "It's a character dining experience where you can meet characters like Cinderella and Prince Charming."],
+            "Story Book Dining at Artist Point": ["You dine in a rustic, enchanted forest setting inspired by Snow White and the Seven Dwarfs.", "This is one of the few places where you can meet the Evil Queen, who makes for a very dramatic photo!", "The desserts are themed to the story, including a 'Poison' Apple mousse."],
+            "Grand Floridian Cafe": ["The cafe offers beautiful views of the Grand Floridian's gardens and pool.", "It's known for its signature Lobster Thermidor Burger, a truly unique Disney dish.", "The decor is inspired by the elegant Victorian seaside resorts of the late 19th century."],
+            "Chef Mickeys": ["The Walt Disney World Monorail glides right through the middle of the Contemporary Resort's atrium, just above the restaurant.", "It's one of the most popular character dining experiences, featuring Mickey, Minnie, and the whole gang.", "The restaurant is famous for its all-you-can-eat buffet, especially the Mickey-shaped waffles at breakfast."]
+        };
+
+        const magicalMissions = {
+            "05/08/2025": "Your first mission is to spot the top of Cinderella Castle or Spaceship Earth on your way to the hotel!",
+            "06/08/2025": "Today's mission is to find the best bargain and the silliest souvenir you can!",
+            "07/08/2025": "Your mission is to learn the name of the dolphin you swim with and give a fish a high-five in the Grand Reef!",
+            "08/08/2025": "Today's mission is to find a pirate's treasure in Adventureland and a friendly ghost in Liberty Square!",
+            "09/08/2025": "Your birthday mission is to get a 'Happy Birthday' from at least five different characters!",
+            "10/08/2025": "Your mission, should you choose to accept it, is to help the Resistance escape the First Order and then shrink down to the size of a toy!",
+            "11/08/2025": "Your mission is to travel around the world in a single day and try a snack from at least three different countries!",
+            "12/08/2025": "Today's mission is to conquer the Crush 'n' Gusher water coaster and build the most epic sandcastle on the beach!",
+            "13/08/2025": "Your birthday mission is to find the biggest animal on the safari and roar louder than a lion at the Festival of the Lion King!",
+            "14/08/2025": "Your mission is to blast off into space for lunch and then design the fastest car of the future!",
+            "15/08/2025": "Today's mission is to join Andy's toys for a BBQ and then drop in on the Hollywood Tower Hotel!",
+            "16/08/2025": "Your mission is to find the biggest LEGO creation at the LEGO Store and eat a treat shaped like Mickey Mouse!",
+            "17/08/2025": "Your spooky mission is to collect candy from every treat trail and dance with a vampire at the Disney Jr. Jam!",
+            "18/08/2025": "Your mission is to meet a queen in a magical forest and then shrink down to the size of a rat in Paris!",
+            "19/08/2025": "Today's mission is to brave the Summit Plummet slide and float down the laziest river you can find!",
+            "20/08/2025": "Your mission is to explore the floating mountains of Pandora and travel back in time to see a dinosaur!",
+            "21/08/2025": "Your mission is to have a meal with Mickey himself and then help the Resistance on a secret mission!",
+            "22/08/2025": "Your final mission is to ride your absolute favorite Magic Kingdom ride one last time and wave goodbye to the castle!",
+            "23/08/2025": "Your mission today is to pick out one perfect souvenir to remember the entire magical trip!"
+        };
+
+        const characterQuestions = {
+            "Mickey at Town Square Theater": "Ask Mickey to show you his favorite magic trick!",
+            "Cinderella at Princess Fairytale Hall": "Ask Cinderella if her glass slippers were comfortable to dance in.",
+            "Elena at Princess Fairytale Hall": "Ask Elena what her favorite song to play on the guitar is.",
+            "Rapunzel at Princess Fairytale Hall": "Ask Rapunzel what her favorite painting is in her tower.",
+            "Tiana at Princess Fairytale Hall": "Ask Tiana what her secret ingredient is for her famous beignets.",
+            "Aladdin & Jasmine in Adventureland": "Ask Aladdin if Genie has ever granted him any silly wishes.",
+            "Captain Jack Sparrow": "Ask Captain Jack where he parked the Black Pearl.",
+            "Peter Pan in Fantasyland": "Ask Peter Pan if he can teach you how to crow like him.",
+            "Winnie the Pooh & Tigger": "Ask Pooh for a hug and ask Tigger to show you his best bounce!",
+            "Gaston in Fantasyland": "Challenge Gaston to a flex-off to see who has the biggest muscles.",
+            "Merida at Fairytale Garden": "Ask Merida if she can teach you how to shoot an arrow.",
+            "Anna and Elsa at Royal Sommerhus": "Ask Anna what her favorite sandwich is.",
+            "Joy at ImageWorks": "Ask Joy to show you her happiest dance move.",
+            "Mickey & Friends near Spaceship Earth": "Give Mickey a high-five and ask Goofy to show you his goofiest pose!",
+            "Mulan in the China Pavilion": "Ask Mulan to show you a warrior pose.",
+            "Snow White in the Germany Pavilion": "Ask Snow White to sing a little bit of her favorite song.",
+            "Belle in the France Pavilion": "Ask Belle what her favorite book is about.",
+            "Donald Duck in the Mexico Pavilion": "Ask Donald to show you his happiest dance.",
+            "Alice in the UK Pavilion": "Ask Alice if she's seen the White Rabbit recently.",
+            "Daisy Duck at International Gateway": "Tell Daisy you love her bow and ask for a stylish pose together.",
+            "Pluto at main entrance": "Give Pluto a pat on the head and ask if he can show you how he wags his tail when he's happy.",
+            "Chewbacca in Star Wars: Galaxys Edge": "Ask Chewbacca for a Wookiee roar lesson!",
+            "Darth Vader at Star Wars Launch Bay": "Ask Darth Vader if he thinks the dark side has better snacks.",
+            "Kylo Ren & Stormtroopers": "Ask Kylo Ren if he's ever tried to use the Force to get a snack from a high shelf.",
+            "Olaf at Celebrity Spotlight": "Ask Olaf for a warm hug!",
+            "Sully at Pixar Plaza": "Ask Sully to show you his best 'scare' face.",
+            "Buzz Lightyear in Toy Story Land": "Give Buzz a salute and ask him to show you his laser.",
+            "Woody & Jessie in Toy Story Land": "Shout 'Reach for the sky!' and ask Woody for a picture.",
+            "Ariel at Walt Disney Presents": "Ask Ariel what the coolest thing she's found from the human world is.",
+            "Disney Junior Characters": "Ask Vampirina to show you her spookiest pose!",
+            "Kevin from Up": "Try to offer Kevin some imaginary chocolate and see what happens!",
+            "Pocahontas on Discovery Island Trails": "Ask Pocahontas what her favorite color of the wind is.",
+            "Moana on Discovery Island": "Ask Moana to teach you the 'warrior face' she taught Pua.",
+            "Donalds Dino-Bash!": "Ask Donald if he's discovered any new dinosaurs today."
+        };
+
+        function getRestaurantFacts(restaurantName, cardId) {
+            const factsContainer = document.getElementById(`facts-container-${cardId}`);
+            if (!factsContainer) return;
+
+            const facts = restaurantFunFacts[restaurantName];
+            if (facts && facts.length > 0) {
+                const factsHTML = `<ul>${facts.map(fact => `<li>${fact}</li>`).join('')}</ul>`;
+                factsContainer.innerHTML = `
+                    <div class="gemini-facts">
+                        <h4>Magical Fun Facts</h4>
+                        ${factsHTML}
+                    </div>`;
+            } else {
+                factsContainer.innerHTML = `<p class="text-center text-gray-400">No fun facts available for this location.</p>`;
+            }
+        }
+        
+        function getCharacterQuestion(characterName) {
+            const modalContainer = document.getElementById('modal-container');
+            const suggestion = characterQuestions[characterName] || "Ask them for a hug or a high-five!";
+            
+            modalContainer.innerHTML = `
+                <div class="modal-overlay" onclick="this.remove()">
+                    <div class="modal-content text-center" onclick="event.stopPropagation()">
+                        <h3 class="text-lg text-gray-400 mb-2">Here's a fun idea for ${characterName}:</h3>
+                        <p class="text-2xl font-bold">"${suggestion}"</p>
+                        <button onclick="document.querySelector('.modal-overlay').remove()" class="mt-6 bg-red-500 text-white font-bold py-2 px-4 rounded w-full">Close</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function getMagicalMission(dayData) {
+            const missionContainer = document.getElementById('magical-mission-container');
+            if (!missionContainer) return;
+
+            const missionText = magicalMissions[dayData.date] || "Have the most magical day ever!";
+            missionContainer.innerHTML = `
+                <div class="magical-mission">
+                    <h3>✨ Your Magical Mission</h3>
+                    <p>${missionText}</p>
+                </div>`;
+        }
+
+
+        window.addEventListener('hashchange', router);
+        document.addEventListener('DOMContentLoaded', router);
+
+    </script>
+</body>
+</html>
