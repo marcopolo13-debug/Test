@@ -1272,152 +1272,123 @@
             window.location.hash = '';
         }
         
-        // --- GEMINI API FUNCTIONS ---
-        async function getRestaurantFacts(restaurantName, cardId) {
+        // --- HARDCODED DATA FUNCTIONS ---
+        const restaurantFunFacts = {
+            "Be Our Guest": ["The grand ballroom ceiling is painted with a beautiful mural of clouds and cherubs, inspired by the Sistine Chapel.", "The chandeliers are over 20 feet tall and are modeled after those given to Ludwig II of Bavaria.", "The 'snow' falling outside the ballroom windows is a digital effect created by the animators of the original film."],
+            "Cinderellas Royal Table": ["You are dining inside the iconic Cinderella Castle, the centerpiece of Magic Kingdom.", "The beautiful stained-glass windows overlooking the park tell the story of Cinderella.", "Every guest is greeted as 'my lord' or 'my lady' to make you feel like royalty."],
+            "Ohana": ["The name 'Ohana' means 'family' in Hawaiian, and the meal is served family-style.", "The restaurant features an 18-foot-long open fire pit where the meats are cooked.", "From some tables, you can get a great view of the Magic Kingdom fireworks."],
+            "Via Napoli Ristorante e Pizzeria": ["The three massive pizza ovens are named after the three active volcanoes in Italy: Etna, Vesuvius, and Stromboli.", "The water used for the pizza dough is sourced to be identical in composition to the water in Naples, Italy.", "The restaurant's design is inspired by the architecture of Florence, Italy."],
+            "Narcoossees": ["The restaurant is located on the shores of the Seven Seas Lagoon, offering stunning views of the Magic Kingdom fireworks.", "It's a signature dining location known for its incredible seafood and coastal cuisine.", "The name 'Narcoossee' is a Native American word meaning 'little bear'."],
+            "Yak & Yeti": ["The restaurant is designed to resemble a Nepalese village home, filled with artifacts collected by a fictional explorer.", "It's one of the few places in Animal Kingdom where you can get a full-service, sit-down meal.", "The menu features a delicious fusion of Pan-Asian flavors."],
+            "Space 220": ["The experience begins in a 'Stellarvator' that simulates a 220-mile journey up to the Centauri Space Station.", "The panoramic windows show a real-time view of Earth from space, with day and night cycles.", "You might spot some astronauts floating by your window during your meal!"],
+            "Roundup Rodeo BBQ": ["The entire restaurant is themed as if Andy from Toy Story built it in his backyard using his toys and playsets.", "Listen for announcements that 'Andy's coming!' – everyone in the restaurant, including the Cast Members, has to freeze in place.", "The ceiling is decorated with giant drawings of characters like Woody and Jessie."],
+            "1900 Park Fare": ["Look for 'Big Bertha,' a massive, antique organ from a French carousel that plays music for the guests.", "This restaurant is famous for its Strawberry Soup, a unique and beloved Disney treat.", "It's a character dining experience where you can meet characters like Cinderella and Prince Charming."],
+            "Story Book Dining at Artist Point": ["You dine in a rustic, enchanted forest setting inspired by Snow White and the Seven Dwarfs.", "This is one of the few places where you can meet the Evil Queen, who makes for a very dramatic photo!", "The desserts are themed to the story, including a 'Poison' Apple mousse."],
+            "Grand Floridian Cafe": ["The cafe offers beautiful views of the Grand Floridian's gardens and pool.", "It's known for its signature Lobster Thermidor Burger, a truly unique Disney dish.", "The decor is inspired by the elegant Victorian seaside resorts of the late 19th century."],
+            "Chef Mickeys": ["The Walt Disney World Monorail glides right through the middle of the Contemporary Resort's atrium, just above the restaurant.", "It's one of the most popular character dining experiences, featuring Mickey, Minnie, and the whole gang.", "The restaurant is famous for its all-you-can-eat buffet, especially the Mickey-shaped waffles at breakfast."]
+        };
+
+        const magicalMissions = {
+            "05/08/2025": "Your first mission is to spot the top of Cinderella Castle or Spaceship Earth on your way to the hotel!",
+            "06/08/2025": "Today's mission is to find the best bargain and the silliest souvenir you can!",
+            "07/08/2025": "Your mission is to learn the name of the dolphin you swim with and give a fish a high-five in the Grand Reef!",
+            "08/08/2025": "Today's mission is to find a pirate's treasure in Adventureland and a friendly ghost in Liberty Square!",
+            "09/08/2025": "Your birthday mission is to get a 'Happy Birthday' from at least five different characters!",
+            "10/08/2025": "Your mission, should you choose to accept it, is to help the Resistance escape the First Order and then shrink down to the size of a toy!",
+            "11/08/2025": "Your mission is to travel around the world in a single day and try a snack from at least three different countries!",
+            "12/08/2025": "Today's mission is to conquer the Crush 'n' Gusher water coaster and build the most epic sandcastle on the beach!",
+            "13/08/2025": "Your birthday mission is to find the biggest animal on the safari and roar louder than a lion at the Festival of the Lion King!",
+            "14/08/2025": "Your mission is to blast off into space for lunch and then design the fastest car of the future!",
+            "15/08/2025": "Today's mission is to join Andy's toys for a BBQ and then drop in on the Hollywood Tower Hotel!",
+            "16/08/2025": "Your mission is to find the biggest LEGO creation at the LEGO Store and eat a treat shaped like Mickey Mouse!",
+            "17/08/2025": "Your spooky mission is to collect candy from every treat trail and dance with a vampire at the Disney Jr. Jam!",
+            "18/08/2025": "Your mission is to meet a queen in a magical forest and then shrink down to the size of a rat in Paris!",
+            "19/08/2025": "Today's mission is to brave the Summit Plummet slide and float down the laziest river you can find!",
+            "20/08/2025": "Your mission is to explore the floating mountains of Pandora and travel back in time to see a dinosaur!",
+            "21/08/2025": "Your mission is to have a meal with Mickey himself and then help the Resistance on a secret mission!",
+            "22/08/2025": "Your final mission is to ride your absolute favorite Magic Kingdom ride one last time and wave goodbye to the castle!",
+            "23/08/2025": "Your mission today is to pick out one perfect souvenir to remember the entire magical trip!"
+        };
+
+        const characterQuestions = {
+            "Mickey at Town Square Theater": "Ask Mickey to show you his favorite magic trick!",
+            "Cinderella at Princess Fairytale Hall": "Ask Cinderella if her glass slippers were comfortable to dance in.",
+            "Elena at Princess Fairytale Hall": "Ask Elena what her favorite song to play on the guitar is.",
+            "Rapunzel at Princess Fairytale Hall": "Ask Rapunzel what her favorite painting is in her tower.",
+            "Tiana at Princess Fairytale Hall": "Ask Tiana what her secret ingredient is for her famous beignets.",
+            "Aladdin & Jasmine in Adventureland": "Ask Aladdin if Genie has ever granted him any silly wishes.",
+            "Captain Jack Sparrow": "Ask Captain Jack where he parked the Black Pearl.",
+            "Peter Pan in Fantasyland": "Ask Peter Pan if he can teach you how to crow like him.",
+            "Winnie the Pooh & Tigger": "Ask Pooh for a hug and ask Tigger to show you his best bounce!",
+            "Gaston in Fantasyland": "Challenge Gaston to a flex-off to see who has the biggest muscles.",
+            "Merida at Fairytale Garden": "Ask Merida if she can teach you how to shoot an arrow.",
+            "Anna and Elsa at Royal Sommerhus": "Ask Anna what her favorite sandwich is.",
+            "Joy at ImageWorks": "Ask Joy to show you her happiest dance move.",
+            "Mickey & Friends near Spaceship Earth": "Give Mickey a high-five and ask Goofy to show you his goofiest pose!",
+            "Mulan in the China Pavilion": "Ask Mulan to show you a warrior pose.",
+            "Snow White in the Germany Pavilion": "Ask Snow White to sing a little bit of her favorite song.",
+            "Belle in the France Pavilion": "Ask Belle what her favorite book is about.",
+            "Donald Duck in the Mexico Pavilion": "Ask Donald to show you his happiest dance.",
+            "Alice in the UK Pavilion": "Ask Alice if she's seen the White Rabbit recently.",
+            "Daisy Duck at International Gateway": "Tell Daisy you love her bow and ask for a stylish pose together.",
+            "Pluto at main entrance": "Give Pluto a pat on the head and ask if he can show you how he wags his tail when he's happy.",
+            "Chewbacca in Star Wars: Galaxys Edge": "Ask Chewbacca for a Wookiee roar lesson!",
+            "Darth Vader at Star Wars Launch Bay": "Ask Darth Vader if he thinks the dark side has better snacks.",
+            "Kylo Ren & Stormtroopers": "Ask Kylo Ren if he's ever tried to use the Force to get a snack from a high shelf.",
+            "Olaf at Celebrity Spotlight": "Ask Olaf for a warm hug!",
+            "Sully at Pixar Plaza": "Ask Sully to show you his best 'scare' face.",
+            "Buzz Lightyear in Toy Story Land": "Give Buzz a salute and ask him to show you his laser.",
+            "Woody & Jessie in Toy Story Land": "Shout 'Reach for the sky!' and ask Woody for a picture.",
+            "Ariel at Walt Disney Presents": "Ask Ariel what the coolest thing she's found from the human world is.",
+            "Disney Junior Characters": "Ask Vampirina to show you her spookiest pose!",
+            "Kevin from Up": "Try to offer Kevin some imaginary chocolate and see what happens!",
+            "Pocahontas on Discovery Island Trails": "Ask Pocahontas what her favorite color of the wind is.",
+            "Moana on Discovery Island": "Ask Moana to teach you the 'warrior face' she taught Pua.",
+            "Donalds Dino-Bash!": "Ask Donald if he's discovered any new dinosaurs today."
+        };
+
+        function getRestaurantFacts(restaurantName, cardId) {
             const factsContainer = document.getElementById(`facts-container-${cardId}`);
             if (!factsContainer) return;
 
-            factsContainer.innerHTML = `<p class="text-center text-gray-400">✨ Searching for magical facts...</p>`;
-
-            const prompt = `Tell me 3 interesting, little-known fun facts about the "${restaurantName}" restaurant at Walt Disney World. Format the response as a simple HTML unordered list (ul) with list items (li).`;
-
-            try {
-                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // API key will be handled by the environment
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                const result = await response.json();
-
-                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
-                    const factsHTML = result.candidates[0].content.parts[0].text;
-                    factsContainer.innerHTML = `
-                        <div class="gemini-facts">
-                            <h4>Magical Fun Facts</h4>
-                            ${factsHTML}
-                        </div>`;
-                } else {
-                     throw new Error("No content received from Gemini.");
-                }
-            } catch (error) {
-                console.error("Error fetching facts:", error);
-                factsContainer.innerHTML = `<p class="text-center text-red-400">Could not fetch fun facts.</p>`;
+            const facts = restaurantFunFacts[restaurantName];
+            if (facts && facts.length > 0) {
+                const factsHTML = `<ul>${facts.map(fact => `<li>${fact}</li>`).join('')}</ul>`;
+                factsContainer.innerHTML = `
+                    <div class="gemini-facts">
+                        <h4>Magical Fun Facts</h4>
+                        ${factsHTML}
+                    </div>`;
+            } else {
+                factsContainer.innerHTML = `<p class="text-center text-gray-400">No fun facts available for this location.</p>`;
             }
         }
         
-        async function getCharacterQuestion(characterName) {
+        function getCharacterQuestion(characterName) {
             const modalContainer = document.getElementById('modal-container');
+            const suggestion = characterQuestions[characterName] || "Ask them for a hug or a high-five!";
+            
             modalContainer.innerHTML = `
-                <div class="modal-overlay">
-                    <div class="modal-content text-center">
-                        <h2 class="text-2xl font-bold mb-4">✨ Thinking of a Magical Question...</h2>
-                        <p>Getting a creative question ready for ${characterName}!</p>
+                <div class="modal-overlay" onclick="this.remove()">
+                    <div class="modal-content text-center" onclick="event.stopPropagation()">
+                        <h3 class="text-lg text-gray-400 mb-2">Here's a fun idea for ${characterName}:</h3>
+                        <p class="text-2xl font-bold">"${suggestion}"</p>
+                        <button onclick="document.querySelector('.modal-overlay').remove()" class="mt-6 bg-red-500 text-white font-bold py-2 px-4 rounded w-full">Close</button>
                     </div>
                 </div>
             `;
-
-            const nonVerbalCharacters = ["Mickey", "Minnie", "Pluto", "Pooh", "Tigger", "Sully", "Chewbacca", "Kevin", "Donald", "Daisy", "Goofy"];
-            const isNonVerbal = nonVerbalCharacters.some(nvChar => characterName.includes(nvChar));
-
-            let prompt;
-            if (isNonVerbal) {
-                prompt = `Suggest a fun and creative interaction prompt for a non-verbal Disney character, "${characterName}", during a meet-and-greet. This could be a simple yes/no question, a request for a specific pose for a photo, or a gesture to do with them (like a high-five or a hug). The suggestion should be something a child would enjoy. Just provide the suggestion, no extra text.`;
-            } else {
-                prompt = `Suggest one fun and creative question to ask the Disney character "${characterName}" during a meet-and-greet at Walt Disney World. The question should be something a child would enjoy asking. Just provide the question, no extra text.`;
-            }
-
-            try {
-                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // API key will be handled by the environment
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                const result = await response.json();
-                
-                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
-                    const suggestion = result.candidates[0].content.parts[0].text;
-                    modalContainer.innerHTML = `
-                        <div class="modal-overlay" onclick="this.remove()">
-                            <div class="modal-content text-center" onclick="event.stopPropagation()">
-                                <h3 class="text-lg text-gray-400 mb-2">Here's a fun idea for ${characterName}:</h3>
-                                <p class="text-2xl font-bold">"${suggestion}"</p>
-                                <button onclick="document.querySelector('.modal-overlay').remove()" class="mt-6 bg-red-500 text-white font-bold py-2 px-4 rounded w-full">Close</button>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    throw new Error("No content received from Gemini.");
-                }
-            } catch (error) {
-                console.error("Error generating question:", error);
-                modalContainer.innerHTML = `
-                     <div class="modal-overlay" onclick="this.remove()">
-                        <div class="modal-content text-center">
-                            <h2 class="text-2xl font-bold mb-4">Oops!</h2>
-                            <p>The magic fizzled out. We couldn't think of a question right now. Please try again later.</p>
-                             <button onclick="document.querySelector('.modal-overlay').remove()" class="mt-4 bg-red-500 text-white font-bold py-2 px-4 rounded w-full">Close</button>
-                        </div>
-                    </div>
-                `;
-            }
         }
         
-        async function getMagicalMission(dayData) {
+        function getMagicalMission(dayData) {
             const missionContainer = document.getElementById('magical-mission-container');
             if (!missionContainer) return;
 
+            const missionText = magicalMissions[dayData.date] || "Have the most magical day ever!";
             missionContainer.innerHTML = `
                 <div class="magical-mission">
-                    <h3>✨ Your Magical Mission...</h3>
-                    <p>Summoning a special task from the magic kingdom...</p>
+                    <h3>✨ Your Magical Mission</h3>
+                    <p>${missionText}</p>
                 </div>`;
-
-            const prompt = `Create a fun, simple, and creative "Magical Mission" for a family with kids to do today at Walt Disney World. The plan for today is: ${dayData.description}. The mission should be a single, engaging sentence.`;
-
-            try {
-                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-
-                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
-                    const missionText = result.candidates[0].content.parts[0].text;
-                    missionContainer.innerHTML = `
-                        <div class="magical-mission">
-                            <h3>✨ Your Magical Mission</h3>
-                            <p>${missionText}</p>
-                        </div>`;
-                } else {
-                    throw new Error("No mission content received.");
-                }
-            } catch (error) {
-                console.error("Error fetching Magical Mission:", error);
-                missionContainer.innerHTML = `
-                    <div class="magical-mission">
-                        <h3>✨ Magical Mission</h3>
-                        <p>Find three Hidden Mickeys today!</p>
-                    </div>`;
-            }
         }
 
 
